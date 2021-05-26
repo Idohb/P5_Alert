@@ -1,13 +1,14 @@
 package com.safetynet.apps.controller;
 
-import com.safetynet.apps.model.FireStation;
-import com.safetynet.apps.model.Person;
 import com.safetynet.apps.service.FireStationService;
+import com.safetynet.apps.service.data.FireStation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 
 @RestController
 public class FireStationController {
@@ -17,81 +18,62 @@ public class FireStationController {
 
     /**
      * Read - get all fireStation
+     *
      * @return - An iterrable objext of FireStation full filled
      */
 
-    @RequestMapping(value = "/fireStations", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<FireStation> getFireStations() {
-        return fireStationService.getFireStations();
+    @GetMapping("/fireStations")
+    public ResponseEntity<List<FireStation>> getFireStations() {
+            return ResponseEntity.ok(fireStationService.getFireStations());
     }
 
     @GetMapping("fireStation/{id}")
-    public FireStation getFireStations(@PathVariable("id") final Long id) {
-        Optional<FireStation> fireStation = fireStationService.getFireStation(id);
-        if(fireStation.isPresent()) {
-            return fireStation.get();
-        } else {
-            return null;
+    public ResponseEntity<FireStation> getFireStation(@PathVariable("id") final Long id) {
+        try {
+            return ResponseEntity.ok(fireStationService.getFireStation(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    /**
-     * Create a fireStation
-     * @param fireStation
-     * @return
-     */
     @PostMapping("/fireStation")
-    public FireStation createFireStation(@RequestBody FireStation fireStation) {
-        return fireStationService.saveFireStation(fireStation);
+    public ResponseEntity<FireStation> createFireStation(@RequestBody FireStationRequest fireStation) {
+        try {
+            return ResponseEntity.ok(fireStationService.addFireStation(fireStation));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    /**
-     * Update - Update an existing employee
-     * @param id - The id of the employee to update
-     * @param fireStation - The employee object updated
-     * @return
-     */
     @PutMapping("/fireStation/{id}")
-    public FireStation updateFireStation(@PathVariable("id") final Long id, @RequestBody FireStation fireStation) {
-        Optional<FireStation> e = fireStationService.getFireStation(id);
-        if(e.isPresent()) {
-            FireStation currentFireStation = e.get();
-
-            String address = fireStation.getAddress();
-            if(address != null) {
-                currentFireStation.setAddress(address);
-            }
-
-
-            int station = fireStation.getStation();
-            if(station != 0) {                  // need test
-                currentFireStation.setStation(station);
-            }
-
-            fireStationService.saveFireStation(currentFireStation);
-            return currentFireStation;
-
-        } else {
-            return null;
+    public ResponseEntity<FireStation> updateFireStation(@PathVariable("id") final Long id, @RequestBody FireStationRequest fireStation) {
+        try {
+            return ResponseEntity.ok(fireStationService.updateFireStation(id, fireStation));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
         }
     }
 
 
-    /**
-     * Delete - Delete an employee
-     * @param id - The id of the employee to delete
-     */
     @DeleteMapping("/fireStation/{id}")
-    public void deleteFireStation(@PathVariable("id") final Long id) {
-        fireStationService.deleteFireStation(id);
+    public ResponseEntity<?> deleteFireStation(@PathVariable("id") final Long id) {
+        try {
+            fireStationService.getFireStation(id);
+            fireStationService.deleteFireStation(id);
+
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    /**
-     * Delete - Delete an employee
-     */
+
     @DeleteMapping("/fireStations")
-    public void deleteFireStations() {
+    public ResponseEntity<?> deleteFireStations() {
         fireStationService.deleteFireStations();
+        return ResponseEntity.noContent().build();
     }
 
 

@@ -1,37 +1,87 @@
 package com.safetynet.apps.service;
 
-import com.safetynet.apps.model.MedicalRecords;
-import com.safetynet.apps.repository.MedicalRecordsRepository;
+import com.safetynet.apps.controller.MedicalRecordsRequest;
+import com.safetynet.apps.mapper.MedicalRecordsConverter;
+import com.safetynet.apps.model.entity.MedicalRecordsEntity;
+import com.safetynet.apps.model.repository.MedicalRecordsRepository;
+import com.safetynet.apps.service.data.MedicalRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class MedicalRecordsService {
 
     @Autowired
-    private MedicalRecordsRepository medicalRecordsRepository;
+    private MedicalRecordsRepository medicalRecordRepository;
 
-    public Optional<MedicalRecords> getMedicalRecord(final Long id) {
-        return medicalRecordsRepository.findById(id);
+    @Autowired
+    private MedicalRecordsConverter medicalRecordsConverter;
+
+    public List<MedicalRecords> getMedicalRecords() {
+        return medicalRecordsConverter.mapperMedicalRecords(medicalRecordRepository.findAll());
     }
 
-    public Iterable<MedicalRecords> getMedicalRecords() {
-        return medicalRecordsRepository.findAll();
+    public MedicalRecords getMedicalRecord(final Long id) {
+        MedicalRecordsEntity medicalRecordsEntity = medicalRecordRepository.findById(id).orElse(null);
+        return medicalRecordsConverter.mapperMedicalRecords(medicalRecordsEntity);
     }
 
     public void deleteMedicalRecord(final Long id) {
-        medicalRecordsRepository.deleteById(id);
+        medicalRecordRepository.deleteById(id);
     }
 
     public void deleteMedicalRecords() {
-        medicalRecordsRepository.deleteAll();
+        medicalRecordRepository.deleteAll();
     }
 
-    public MedicalRecords saveMedicalRecords(MedicalRecords employee) {
-        MedicalRecords savedEmployee = medicalRecordsRepository.save(employee);
-        return savedEmployee;
+    public MedicalRecords addMedicalRecord(MedicalRecordsRequest medicalRecord) {
+        System.out.println(medicalRecord.getBirthdate());
+        MedicalRecordsEntity entity = new MedicalRecordsEntity();
+
+        entity.setIdMedicalRecords(0L);
+        entity.setMedications(medicalRecord.getMedications());
+        entity.setAllergies(medicalRecord.getAllergies());
+        entity.setBirthDate(medicalRecord.getBirthdate());
+        entity = medicalRecordRepository.save(entity);
+
+        MedicalRecords response = new MedicalRecords();
+        response.setBirthdate(entity.getBirthDate());
+        response.setMedications(entity.getMedications());
+        response.setAllergies(entity.getAllergies());
+        response.setIdMedicalRecords(entity.getIdMedicalRecords());
+        return response;
+    }
+
+
+    public MedicalRecords updateMedicalRecords(final Long id, MedicalRecordsRequest medicalRecordsRequest) {
+        MedicalRecordsEntity entity = medicalRecordRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Id " + id + " not found"));
+        this.update(entity, medicalRecordsRequest);
+        entity = medicalRecordRepository.save(entity);
+
+        MedicalRecords response = new MedicalRecords();
+        response.setBirthdate(entity.getBirthDate());
+        response.setMedications(entity.getMedications());
+        response.setAllergies(entity.getAllergies());
+        response.setIdMedicalRecords(entity.getIdMedicalRecords());
+        return response;
+
+    }
+
+    public void update(MedicalRecordsEntity medicalRecordToUpdate, MedicalRecordsRequest medicalRecordsRequest) {
+        if (medicalRecordsRequest.getBirthdate() != null)
+            medicalRecordToUpdate.setBirthDate(medicalRecordsRequest.getBirthdate());
+        if (medicalRecordsRequest.getMedications() != null)
+            medicalRecordToUpdate.setAllergies(medicalRecordsRequest.getMedications());
+        if (medicalRecordsRequest.getAllergies() != null)
+            medicalRecordToUpdate.setAllergies(medicalRecordsRequest.getAllergies());
+    }
+
+
+    public Iterable<MedicalRecordsEntity> addMedicalRecords(List<MedicalRecordsEntity> medicalRecords) {
+        return medicalRecordRepository.saveAll(medicalRecords);
     }
 
 }

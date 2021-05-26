@@ -1,29 +1,35 @@
 package com.safetynet.apps.service;
 
 
-import com.safetynet.apps.model.FireStation;
-import com.safetynet.apps.model.Person;
-import com.safetynet.apps.repository.FireStationRepository;
-import lombok.Data;
+import com.safetynet.apps.controller.FireStationRequest;
+import com.safetynet.apps.mapper.FireStationConverter;
+import com.safetynet.apps.model.entity.FireStationEntity;
+import com.safetynet.apps.model.repository.FireStationRepository;
+import com.safetynet.apps.service.data.FireStation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
 
-@Data
 @Service
 public class FireStationService {
 
     @Autowired
     private FireStationRepository fireStationRepository;
 
-    public Optional<FireStation> getFireStation(final Long id) {
-        return fireStationRepository.findById(id);
+    @Autowired
+    private FireStationConverter fireStationConverter;
+
+    public List<FireStation> getFireStations() {
+        return fireStationConverter.mapperFireStation( fireStationRepository.findAll());
     }
 
-    public Iterable<FireStation> getFireStations() {
-        return fireStationRepository.findAll();
+    public FireStation getFireStation(final Long id) {
+        FireStationEntity fireStationEntity = fireStationRepository.findById(id).orElse(null);
+        return fireStationConverter.mapperFireStation(fireStationEntity);
     }
+
 
     public void deleteFireStation(final Long id) {
         fireStationRepository.deleteById(id);
@@ -33,8 +39,47 @@ public class FireStationService {
         fireStationRepository.deleteAll();
     }
 
-    public FireStation saveFireStation(FireStation employee) {
-        FireStation savedEmployee = fireStationRepository.save(employee);
-        return savedEmployee;
+    public FireStation addFireStation(FireStationRequest fireStationRequest) {
+        FireStationEntity entity = new FireStationEntity();
+        entity.setIdFireStation(0L);
+        entity.setAddress(fireStationRequest.getAddress());
+        entity.setStation(fireStationRequest.getStation());
+        entity = fireStationRepository.save(entity);
+
+        FireStation response = new FireStation();
+        response.setIdFireStation(entity.getIdFireStation());
+        response.setAddress(entity.getAddress());
+        response.setStation(entity.getStation());
+
+        return response;
     }
+
+
+    public FireStation updateFireStation(final Long id, FireStationRequest fireStation) {
+        FireStationEntity entity = fireStationRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Id " + id + " not found"));
+        this.update(entity, fireStation);
+        entity = fireStationRepository.save(entity);
+
+        FireStation response = new FireStation();
+
+        response.setIdFireStation(entity.getIdFireStation());
+        response.setStation(entity.getStation());
+        response.setAddress(entity.getAddress());
+
+        return response;
+    }
+
+    public void update(FireStationEntity fireStationToUpdate, FireStationRequest fireStation) {
+
+        if (fireStation.getStation() != null)
+            fireStationToUpdate.setStation(fireStation.getStation());
+
+        if (fireStation.getAddress() != null)
+            fireStationToUpdate.setAddress(fireStation.getAddress());
+    }
+
+    public Iterable<FireStationEntity> addFireStations(List<FireStationEntity> fireStations) {
+        return fireStationRepository.saveAll(fireStations);
+    }
+
 }

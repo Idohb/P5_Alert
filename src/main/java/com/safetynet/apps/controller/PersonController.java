@@ -1,13 +1,14 @@
 package com.safetynet.apps.controller;
 
 
-import com.safetynet.apps.model.Person;
 import com.safetynet.apps.service.PersonService;
+import com.safetynet.apps.service.data.Person;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class PersonController {
@@ -15,102 +16,79 @@ public class PersonController {
     @Autowired
     private PersonService personService;
 
+
     /**
      * Read - get all person
+     *
      * @return - An iterrable objext of Person full filled
      */
 
-    @RequestMapping(value = "/persons", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<Person> getPersons() {
-        return personService.getPersons();
+    @GetMapping("persons")
+    public ResponseEntity<List<Person>> getPersons() {
+            return ResponseEntity.ok(personService.getPersons());
     }
 
+
     @GetMapping("person/{id}")
-    public Person getPersons(@PathVariable("id") final Long id) {
-        Optional<Person> person = personService.getPerson(id);
-        if(person.isPresent()) {
-            return person.get();
-        } else {
-            return null;
+    public ResponseEntity<Person> getPerson(@PathVariable("id") final Long id) {
+            return ResponseEntity.ok(personService.getPerson(id));
+    }
+
+    /**
+     * @param person - The person object created
+     * @return ResponseEntity of Person
+     */
+    @PostMapping("/person")
+    public ResponseEntity<Person> createPerson(@RequestBody PersonRequest person) {
+        try {
+            return ResponseEntity.ok(personService.addPerson(person));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     /**
-     * Create a person
-     * @param person
-     * @return
-     */
-    @PostMapping("/person")
-    public Person createPerson(@RequestBody Person person) {
-        return personService.savePerson(person);
-    }
-
-    /**
      * Update - Update an existing employee
-     * @param id - The id of the employee to update
+     *
+     * @param id     - The id of the employee to update
      * @param person - The employee object updated
-     * @return
      */
-    @PutMapping("/employee/{id}")
-    public Person updatePerson(@PathVariable("id") final Long id, @RequestBody Person person) {
-        Optional<Person> e = personService.getPerson(id);
-        if(e.isPresent()) {
-            Person currentPerson = e.get();
-
-            String firstName = person.getFirstName();
-            if(firstName != null) {
-                currentPerson.setFirstName(firstName);
-            }
-
-            String lastName = person.getLastName();
-            if(lastName != null) {
-                currentPerson.setLastName(lastName);;
-            }
-
-            String address = person.getAddress();
-            if(address != null) {
-                currentPerson.setCity(address);
-            }
-
-            int zip = person.getZip();
-            if(zip != 0) {                  // need test
-                currentPerson.setZip(zip);
-            }
-
-            String city = person.getCity();
-            if(city != null) {
-                currentPerson.setCity(city);
-            }
-
-            String email = person.getEmail();
-            if(email != null) {
-                currentPerson.setEmail(email);
-            }
-
-            personService.savePerson(currentPerson);
-            return currentPerson;
-
-        } else {
-            return null;
+    @PutMapping("/person/{id}")
+    public ResponseEntity<Person> updatePerson(@PathVariable("id") final Long id, @RequestBody PersonRequest person) {
+        try {
+            return ResponseEntity.ok(personService.updatePerson(id, person));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
         }
     }
 
 
     /**
      * Delete - Delete an employee
+     *
      * @param id - The id of the employee to delete
      */
     @DeleteMapping("/person/{id}")
-    public void deletePerson(@PathVariable("id") final Long id) {
-        personService.deletePerson(id);
+    public ResponseEntity<?> deletePerson(@PathVariable("id") final Long id) {
+        try {
+            personService.getPerson(id);
+            personService.deletePerson(id);
+
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
      * Delete - Delete an employee
      */
     @DeleteMapping("/persons")
-    public void deletePerson() {
+    public ResponseEntity<?> deletePersons() {
         personService.deletePersons();
+        return ResponseEntity.noContent().build();
     }
 
 

@@ -1,14 +1,15 @@
 package com.safetynet.apps.controller;
 
-import com.safetynet.apps.model.MedicalRecords;
+
 import com.safetynet.apps.service.MedicalRecordsService;
+import com.safetynet.apps.service.data.MedicalRecords;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.Column;
-import java.util.Date;
-import java.util.Optional;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 
 @RestController
 public class MedicalRecordsController {
@@ -18,96 +19,65 @@ public class MedicalRecordsController {
 
     /**
      * Read - get all medicalRecords
+     *
      * @return - An iterrable objext of MedicalRecords full filled
      */
 
-    @RequestMapping(value = "/medicalRecords", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Iterable<MedicalRecords> getMedicalRecords() {
-        return medicalRecordsService.getMedicalRecords();
+    @GetMapping("medicalRecords")
+    public ResponseEntity<List<MedicalRecords>> getMedicalRecords() {
+        try {
+            return ResponseEntity.ok(medicalRecordsService.getMedicalRecords());
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @GetMapping("medicalRecord/{id}")
-    public MedicalRecords getMedicalRecords(@PathVariable("id") final Long id) {
-        Optional<MedicalRecords> medicalRecords = medicalRecordsService.getMedicalRecord(id);
-        if(medicalRecords.isPresent()) {
-            return medicalRecords.get();
-        } else {
-            return null;
+    public ResponseEntity<MedicalRecords> getMedicalRecord(@PathVariable("id") final Long id) {
+        try {
+            return ResponseEntity.ok(medicalRecordsService.getMedicalRecord(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
-    /**
-     * Create a medicalRecords
-     * @param medicalRecords
-     * @return
-     */
-    @PostMapping("/medicalRecords")
-    public MedicalRecords createMedicalRecords(@RequestBody MedicalRecords medicalRecords) {
-        return medicalRecordsService.saveMedicalRecords(medicalRecords);
-    }
-
-    /**
-     * Update - Update an existing employee
-     * @param id - The id of the employee to update
-     * @param medicalRecords - The employee object updated
-     * @return
-     */
-    @PutMapping("/medicalRecords/{id}")
-    public MedicalRecords updateMedicalRecords(@PathVariable("id") final Long id, @RequestBody MedicalRecords medicalRecords) {
-        Optional<MedicalRecords> e = medicalRecordsService.getMedicalRecord(id);
-        if(e.isPresent()) {
-            MedicalRecords currentMedicalRecords = e.get();
-
-            String firstName = medicalRecords.getFirstName();
-            if(firstName != null) {
-                currentMedicalRecords.setFirstName(firstName);
-            }
-
-
-            String lastName = medicalRecords.getLastName();
-            if(lastName != null) {                  // need test
-                currentMedicalRecords.setLastName(lastName);
-            }
-
-            Date birthDate = medicalRecords.getBirthDate();
-            if (birthDate != null) {
-                currentMedicalRecords.setBirthDate(birthDate);
-            }
-
-            String medications = medicalRecords.getMedications();
-            if(medications != null) {                  // need test
-                currentMedicalRecords.setMedications(medications);
-            }
-
-            String allergies = medicalRecords.getAllergies();
-            if(allergies != null) {                  // need test
-                currentMedicalRecords.setAllergies(allergies);
-            }
-
-            medicalRecordsService.saveMedicalRecords(currentMedicalRecords);
-            return currentMedicalRecords;
-
-        } else {
-            return null;
+    @PostMapping("/medicalRecord")
+    public ResponseEntity<MedicalRecords> createMedicalRecord(@RequestBody MedicalRecordsRequest medicalRecords) {
+        try {
+            return ResponseEntity.ok(medicalRecordsService.addMedicalRecord(medicalRecords));
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
-
-    /**
-     * Delete - Delete an employee
-     * @param id - The id of the employee to delete
-     */
-    @DeleteMapping("/medicalRecords/{id}")
-    public void deleteMedicalRecord(@PathVariable("id") final Long id) {
-        medicalRecordsService.deleteMedicalRecord(id);
+    @PutMapping("/medicalRecord/{id}")
+    public ResponseEntity<MedicalRecords> updateMedicalRecord(@PathVariable("id") final Long id, @RequestBody MedicalRecordsRequest medicalRecords) {
+        try {
+            return ResponseEntity.ok(medicalRecordsService.updateMedicalRecords(id, medicalRecords));
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    /**
-     * Delete - Delete an employee
-     */
+    @DeleteMapping("/medicalRecord/{id}")
+    public ResponseEntity<?> deleteMedicalRecords(@PathVariable("id") final Long id) {
+        try {
+            medicalRecordsService.getMedicalRecord(id);
+            medicalRecordsService.deleteMedicalRecord(id);
+
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException exception) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @DeleteMapping("/medicalRecords")
-    public void deleteMedicalRecords() {
+    public ResponseEntity<?> deletePMedicalRecords() {
         medicalRecordsService.deleteMedicalRecords();
+        return ResponseEntity.noContent().build();
     }
+
 
 }
