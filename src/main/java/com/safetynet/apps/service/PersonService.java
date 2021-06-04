@@ -24,7 +24,7 @@ public class PersonService {
     }
 
     public Person getPerson(final Long id) {
-        PersonEntity personEntity = personRepository.findById(id).orElse(null);
+        PersonEntity personEntity = personRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Id " + id + " not found"));
         return personConverter.mapperPerson(personEntity);
     }
 
@@ -41,51 +41,26 @@ public class PersonService {
     public Person addPerson(PersonRequest person) {
         PersonEntity entity = new PersonEntity();
         entity.setId(0L);
-        entity.setMedicalRecord(null);
         entity.setFirstName(person.getFirstName());
         entity.setLastName(person.getLastName());
         entity.setAddress(person.getAddress());
         entity.setCity(person.getCity());
-        entity.setEmail(person.getEmail());
-        entity.setPhone(person.getPhone());
         entity.setZip(person.getZip());
+        entity.setPhone(person.getPhone());
+        entity.setEmail(person.getEmail());
+        entity.setMedicalRecord(null);
         entity = personRepository.save(entity);
 
-        Person response = new Person();
-        response.setId(entity.getId());
-        response.setMedicalRecords(null);
-        response.setFirstName(entity.getFirstName());
-        response.setLastName(entity.getLastName());
-        response.setAddress(entity.getAddress());
-        response.setCity(entity.getCity());
-        response.setEmail(entity.getEmail());
-        response.setPhone(entity.getPhone());
-        response.setZip(entity.getZip());
-
-        return response;
+        return personConverter.mapperPerson(entity);
     }
 
     public Person updatePerson(final Long id, PersonRequest personRequest) {
 
         PersonEntity entity = personRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Id " + id + " not found"));
-
         updateEntity(entity, personRequest);
-
         entity = personRepository.save(entity);
+        return personConverter.mapperPerson(entity);
 
-
-        Person response = new Person();
-        response.setId(entity.getId());
-        response.setMedicalRecords(null);
-        response.setFirstName(entity.getFirstName());
-        response.setLastName(entity.getLastName());
-        response.setAddress(entity.getAddress());
-        response.setCity(entity.getCity());
-        response.setEmail(entity.getEmail());
-        response.setPhone(entity.getPhone());
-        response.setZip(entity.getZip());
-
-        return response;
 
     }
 

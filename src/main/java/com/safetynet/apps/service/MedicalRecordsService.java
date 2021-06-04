@@ -25,7 +25,7 @@ public class MedicalRecordsService {
     }
 
     public MedicalRecords getMedicalRecord(final Long id) {
-        MedicalRecordsEntity medicalRecordsEntity = medicalRecordRepository.findById(id).orElse(null);
+        MedicalRecordsEntity medicalRecordsEntity = medicalRecordRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Id " + id + " not found"));
         return medicalRecordsConverter.mapperMedicalRecords(medicalRecordsEntity);
     }
 
@@ -38,21 +38,15 @@ public class MedicalRecordsService {
     }
 
     public MedicalRecords addMedicalRecord(MedicalRecordsRequest medicalRecord) {
-        System.out.println(medicalRecord.getBirthdate());
         MedicalRecordsEntity entity = new MedicalRecordsEntity();
-
         entity.setIdMedicalRecords(0L);
         entity.setMedications(medicalRecord.getMedications());
         entity.setAllergies(medicalRecord.getAllergies());
         entity.setBirthDate(medicalRecord.getBirthdate());
+
         entity = medicalRecordRepository.save(entity);
 
-        MedicalRecords response = new MedicalRecords();
-        response.setBirthdate(entity.getBirthDate());
-        response.setMedications(entity.getMedications());
-        response.setAllergies(entity.getAllergies());
-        response.setIdMedicalRecords(entity.getIdMedicalRecords());
-        return response;
+        return medicalRecordsConverter.mapperMedicalRecords(entity);
     }
 
 
@@ -61,12 +55,7 @@ public class MedicalRecordsService {
         this.update(entity, medicalRecordsRequest);
         entity = medicalRecordRepository.save(entity);
 
-        MedicalRecords response = new MedicalRecords();
-        response.setBirthdate(entity.getBirthDate());
-        response.setMedications(entity.getMedications());
-        response.setAllergies(entity.getAllergies());
-        response.setIdMedicalRecords(entity.getIdMedicalRecords());
-        return response;
+        return medicalRecordsConverter.mapperMedicalRecords(entity);
 
     }
 

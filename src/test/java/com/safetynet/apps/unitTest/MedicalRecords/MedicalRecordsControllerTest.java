@@ -2,7 +2,6 @@ package com.safetynet.apps.unitTest.MedicalRecords;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.apps.controller.MedicalRecordsController;
-import com.safetynet.apps.controller.dto.MedicalRecordsDTO;
 import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.service.MedicalRecordsService;

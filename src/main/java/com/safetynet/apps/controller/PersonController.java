@@ -31,7 +31,11 @@ public class PersonController {
 
     @GetMapping("person/{id}")
     public ResponseEntity<Person> getPerson(@PathVariable("id") final Long id) {
+        try {
             return ResponseEntity.ok(personService.getPerson(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     /**

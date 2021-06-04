@@ -26,7 +26,7 @@ public class FireStationService {
     }
 
     public FireStation getFireStation(final Long id) {
-        FireStationEntity fireStationEntity = fireStationRepository.findById(id).orElse(null);
+        FireStationEntity fireStationEntity = fireStationRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Id " + id + " not found"));
         return fireStationConverter.mapperFireStation(fireStationEntity);
     }
 
@@ -44,14 +44,10 @@ public class FireStationService {
         entity.setIdFireStation(0L);
         entity.setAddress(fireStationRequest.getAddress());
         entity.setStation(fireStationRequest.getStation());
+
         entity = fireStationRepository.save(entity);
 
-        FireStation response = new FireStation();
-        response.setIdFireStation(entity.getIdFireStation());
-        response.setAddress(entity.getAddress());
-        response.setStation(entity.getStation());
-
-        return response;
+        return fireStationConverter.mapperFireStation(entity);
     }
 
 
@@ -60,13 +56,7 @@ public class FireStationService {
         this.update(entity, fireStation);
         entity = fireStationRepository.save(entity);
 
-        FireStation response = new FireStation();
-
-        response.setIdFireStation(entity.getIdFireStation());
-        response.setStation(entity.getStation());
-        response.setAddress(entity.getAddress());
-
-        return response;
+        return fireStationConverter.mapperFireStation(entity);
     }
 
     public void update(FireStationEntity fireStationToUpdate, FireStationRequest fireStation) {
