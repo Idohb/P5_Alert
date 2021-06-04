@@ -26,6 +26,9 @@ class PersonServiceTest {
     @Mock
     private PersonRepository personRepository;
 
+    @Mock
+    private PersonConverter personConverter;
+
     @InjectMocks
     private PersonService personService;
 
@@ -39,35 +42,35 @@ class PersonServiceTest {
     }
 
 
-//    @Test
-//    void createPerson_ShouldReturnPersonExpected() {
-//        Person person = new Person();
-//        person.setId(1L);
-//
-//        PersonEntity personEntity = new PersonEntity();
-//        personEntity.setFirstName("1");
-//        personEntity.setZip("2");
-//        personEntity.setPhone("3");
-//        personEntity.setAddress("4");
-//        personEntity.setCity("5");
-//        personEntity.setEmail("6");
-//        personEntity.setLastName("7");
-//
-//        when(personRepository.save(any())).thenReturn(personEntity);
-//
-//
-//        person = personConverter.mapperPerson( personEntity);
-//
-//        assertThat(person.getFirstName()).isEqualTo("1");
-//        assertThat(person.getZip()).isEqualTo("2");
-//        assertThat(person.getPhone()).isEqualTo("3");
-//        assertThat(person.getAddress()).isEqualTo("4");
-//        assertThat(person.getCity()).isEqualTo("5");
-//        assertThat(person.getEmail()).isEqualTo("6");
-//        assertThat(person.getLastName()).isEqualTo("7");
-//
-//
-//    }
+    @Test
+    void createPerson_ShouldReturnPersonExpected() {
+        Person person = new Person();
+        person.setId(1L);
+
+        PersonEntity personEntity = new PersonEntity();
+        personEntity.setFirstName("1");
+        personEntity.setZip("2");
+        personEntity.setPhone("3");
+        personEntity.setAddress("4");
+        personEntity.setCity("5");
+        personEntity.setEmail("6");
+        personEntity.setLastName("7");
+
+        when(personRepository.save(any())).thenReturn(personEntity);
+
+
+        person = personConverter.mapperPerson( personEntity);
+
+        assertThat(person.getFirstName()).isEqualTo("1");
+        assertThat(person.getZip()).isEqualTo("2");
+        assertThat(person.getPhone()).isEqualTo("3");
+        assertThat(person.getAddress()).isEqualTo("4");
+        assertThat(person.getCity()).isEqualTo("5");
+        assertThat(person.getEmail()).isEqualTo("6");
+        assertThat(person.getLastName()).isEqualTo("7");
+
+
+    }
 
 
 //    @Test
