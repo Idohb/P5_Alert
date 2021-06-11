@@ -30,9 +30,6 @@ class PersonServiceTest {
     @Mock
     private PersonRepository personRepository;
 
-    @Mock
-    private PersonConverter personConverter;
-
     @InjectMocks
     private PersonService personService;
 
@@ -52,267 +49,51 @@ class PersonServiceTest {
         //Given
         Method method = PersonService.class.getDeclaredMethod("updateEntity", PersonEntity.class, PersonRequest.class);
 
-        PersonRequest personRequest = new PersonRequest("8","9","10","11","12","13","14");
+        PersonRequest personRequest = new PersonRequest(       "8","9","10","11","12","13","14");
 
-        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-        PersonEntity entity = new PersonEntity(1L,"1","2","3","4","5","6","7",medicalRecord);
+        PersonEntity personEntity   = new PersonEntity(1L,  "1","2","3" ,"4" ,"5" ,"6" ,"7",null);
 
         //When
         method.setAccessible(true);
-        method.invoke(personService, entity, personRequest);
+        method.invoke(personService, personEntity, personRequest);
 
         //Then
-        assertEquals(entity.getFirstName()  , "8");
-        assertEquals(entity.getLastName()   , "9");
+        assertEquals(personEntity.getFirstName()  ,"8");
+        assertEquals(personEntity.getLastName()   ,"9");
+        assertEquals(personEntity.getAddress()    ,"10");
+        assertEquals(personEntity.getCity()       ,"11");
+        assertEquals(personEntity.getZip()        ,"12");
+        assertEquals(personEntity.getPhone()      ,"13");
+        assertEquals(personEntity.getEmail()      ,"14");
+    }
+
+    @Test
+    void updateEntity_ShouldNotChangeEntityFromNullPersonrequest() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        //Given
+        Method method = PersonService.class.getDeclaredMethod("updateEntity", PersonEntity.class, PersonRequest.class);
+
+        PersonRequest personRequest = new PersonRequest(); // instantiate PersonRequest with no arguments to set it null;
+
+        PersonEntity personEntity = new PersonEntity(1L,"1","2","3","4","5","6","7",null);
+
+        //When
+        method.setAccessible(true);
+        method.invoke(personService, personEntity, personRequest);
+
+        //Then
+        assertEquals(personEntity.getFirstName()  ,"1");
+        assertEquals(personEntity.getLastName()   ,"2");
+        assertEquals(personEntity.getAddress()    ,"3");
+        assertEquals(personEntity.getCity()       ,"4");
+        assertEquals(personEntity.getZip()        ,"5");
+        assertEquals(personEntity.getPhone()      ,"6");
+        assertEquals(personEntity.getEmail()      ,"7");
     }
 
     @Test
     void updatePerson_ShouldChangeFirstName() {
 
     }
-
-//    @Test
-//    void updatePerson_ShouldChangeLastName() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setLastName("AZERTY");
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setLastName("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getLastName(), "AZERTY");
-//    }
-//
-//    @Test
-//    void updatePerson_ShouldChangeAddress() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setAddress("AZERTY");
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setAddress("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getAddress(), "AZERTY");
-//    }
-//
-//    //city
-//    @Test
-//    void updatePerson_ShouldChangeCity() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setCity("AZERTY");
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setCity("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getCity(), "AZERTY");
-//    }
-//
-//    //Zip
-//    @Test
-//    void updatePerson_ShouldChangeZip() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setZip("2");
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setZip("1");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getZip(), "2");
-//    }
-//
-//    //Phone
-//    @Test
-//    void updatePerson_ShouldChangePhone() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setPhone("AZERTY");
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setPhone("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getPhone(), "AZERTY");
-//    }
-//
-//
-//    //mail
-//    @Test
-//    void updatePerson_ShouldChangeEmail() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setEmail("AZERTY");
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setEmail("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getEmail(), "AZERTY");
-//    }
-//
-//    @Test
-//    void updatePerson_ShouldNotChangeFirstName() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setFirstName(null);
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setLastName("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getLastName(), "AQWZSX");
-//    }
-//
-//    @Test
-//    void updatePerson_ShouldNotChangeLastName() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setLastName(null);
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setLastName("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getLastName(), "AQWZSX");
-//    }
-//
-//    @Test
-//    void updatePerson_ShouldNotChangeAddress() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setAddress(null);
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setAddress("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getAddress(), "AQWZSX");
-//    }
-//
-//    //city
-//    @Test
-//    void updatePerson_ShouldNotChangeCity() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setCity(null);
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setCity("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getCity(), "AQWZSX");
-//    }
-//
-//    //Zip
-//    @Test
-//    void updatePerson_ShouldNotChangeZip() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setZip(null);
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setZip("1");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getZip(), "1");
-//    }
-//
-//    //Phone
-//    @Test
-//    void updatePerson_ShouldNotChangePhone() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setPhone(null);
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setPhone("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getPhone(), "AQWZSX");
-//    }
-//
-//
-//    //mail
-//    @Test
-//    void updatePerson_ShouldNotChangeEmail() {
-//        Person person = new Person();
-//        Person personToUpdate = new Person();
-//
-//        person.setEmail(null);
-//        personToUpdate.setFirstName("QWERTY");
-//        personToUpdate.setEmail("AQWZSX");
-//
-//        when(personRepository.findById(1L)).thenReturn(Optional.of(personToUpdate));
-//        when(personRepository.save(any())).thenReturn(null);
-//
-//        personService.updatePerson(1L, person);
-//
-//        assertEquals(personToUpdate.getFirstName(), "QWERTY");
-//        assertEquals(personToUpdate.getEmail(), "AQWZSX");
-//    }
 
 }
