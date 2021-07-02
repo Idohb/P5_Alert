@@ -1,5 +1,6 @@
 package com.safetynet.apps.controller;
 
+import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.service.FireStationService;
 import com.safetynet.apps.service.data.FireStation;
 import org.springframework.beans.factory.annotation.Autowired;

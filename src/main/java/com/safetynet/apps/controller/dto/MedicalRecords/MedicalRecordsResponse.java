@@ -1,4 +1,4 @@
-package com.safetynet.apps.controller;
+package com.safetynet.apps.controller.dto.MedicalRecords;
 
 import com.safetynet.apps.model.entity.PersonEntity;
 import lombok.AllArgsConstructor;

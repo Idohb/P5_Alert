@@ -1,4 +1,4 @@
-package com.safetynet.apps.controller;
+package com.safetynet.apps.controller.dto.FireStation;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

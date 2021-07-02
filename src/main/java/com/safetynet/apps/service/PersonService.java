@@ -1,6 +1,6 @@
 package com.safetynet.apps.service;
 
-import com.safetynet.apps.controller.PersonRequest;
+import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.mapper.PersonConverter;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.PersonRepository;
@@ -38,17 +38,8 @@ public class PersonService {
 
 
 
-    public Person addPerson(PersonRequest person) {
-        PersonEntity entity = new PersonEntity();
-        entity.setId(0L);
-        entity.setFirstName(person.getFirstName());
-        entity.setLastName(person.getLastName());
-        entity.setAddress(person.getAddress());
-        entity.setCity(person.getCity());
-        entity.setZip(person.getZip());
-        entity.setPhone(person.getPhone());
-        entity.setEmail(person.getEmail());
-        entity.setMedicalRecord(null);
+    public Person addPerson(PersonEntity entity) {
+
         entity = personRepository.save(entity);
 
         return personConverter.mapperPerson(entity);

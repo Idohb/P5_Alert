@@ -1,6 +1,8 @@
 package com.safetynet.apps.controller;
 
 
+import com.safetynet.apps.controller.dto.Person.PersonRequest;
+import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.service.PersonService;
 import com.safetynet.apps.service.data.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,17 @@ public class PersonController {
     @PostMapping("/person")
     public ResponseEntity<Person> createPerson(@RequestBody PersonRequest person) {
         try {
-            return ResponseEntity.ok(personService.addPerson(person));
+            PersonEntity entity = new PersonEntity(0L,
+                    person.getFirstName(),
+                    person.getLastName(),
+                    person.getAddress(),
+                    person.getCity(),
+                    person.getZip(),
+                    person.getPhone(),
+                    person.getEmail(),
+                    null
+            );
+            return ResponseEntity.ok(personService.addPerson(/*person*/entity));
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().build();
         }

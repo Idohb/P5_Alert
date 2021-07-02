@@ -1,6 +1,7 @@
 package com.safetynet.apps.controller;
 
 
+import com.safetynet.apps.controller.dto.MedicalRecords.MedicalRecordsRequest;
 import com.safetynet.apps.service.MedicalRecordsService;
 import com.safetynet.apps.service.data.MedicalRecords;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,5 @@
-package com.safetynet.apps.controller;
+package com.safetynet.apps.controller.dto.Person;
 
-import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PersonResponse {
-    private Long id;
+public class PersonRequest {
 
     private String firstName;
 
@@ -24,6 +22,4 @@ public class PersonResponse {
     private String phone;
 
     private String email;
-
-    private MedicalRecordsEntity medicalRecord;
 }

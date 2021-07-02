@@ -1,6 +1,6 @@
 package com.safetynet.apps.service;
 
-import com.safetynet.apps.controller.MedicalRecordsRequest;
+import com.safetynet.apps.controller.dto.MedicalRecords.MedicalRecordsRequest;
 import com.safetynet.apps.mapper.MedicalRecordsConverter;
 import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.repository.MedicalRecordsRepository;

@@ -1,8 +1,6 @@
 package com.safetynet.apps.service.data;
 
-import com.safetynet.apps.controller.PersonRequest;
 import com.safetynet.apps.mapper.MedicalRecordsConverter;
-import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
 import lombok.Data;
 

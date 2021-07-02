@@ -10,14 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-
-import static java.util.Collections.singletonList;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.apps.controller.PersonController;
-import com.safetynet.apps.controller.PersonRequest;
-import com.safetynet.apps.controller.PersonResponse;
-import com.safetynet.apps.model.entity.MedicalRecordsEntity;
+import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.service.PersonService;
 import com.safetynet.apps.service.data.Person;
@@ -41,8 +36,7 @@ class PersonControllerTest {
 
     @MockBean
     private PersonService personService;
-    @MockBean
-    private MedicalRecordsEntity medicalRecords;
+
 
 
     @Test
@@ -82,9 +76,6 @@ class PersonControllerTest {
                 .content(obj.writeValueAsString(person)))
                 .andExpect(status().isOk());
     }
-
-
-
 
     @Test
     void createPerson_ShouldReturnBadRequest() throws Exception {
@@ -136,7 +127,7 @@ class PersonControllerTest {
 
     @Test
     public void deletePersons_shouldReturnNoContent() throws Exception {
-        PersonRequest person = new PersonRequest();
+        PersonEntity person = new PersonEntity();
         personService.addPerson(person);
         mockMvc.perform(delete("/persons")).andExpect(status().isNoContent());
     }

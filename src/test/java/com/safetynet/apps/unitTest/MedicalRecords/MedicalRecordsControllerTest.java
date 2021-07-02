@@ -2,7 +2,7 @@ package com.safetynet.apps.unitTest.MedicalRecords;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.apps.controller.MedicalRecordsController;
-import com.safetynet.apps.model.entity.MedicalRecordsEntity;
+import com.safetynet.apps.controller.dto.MedicalRecords.MedicalRecordsRequest;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.service.MedicalRecordsService;
 import com.safetynet.apps.service.data.MedicalRecords;
@@ -13,9 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -39,14 +40,6 @@ public class MedicalRecordsControllerTest {
     private static ObjectMapper mapper = new ObjectMapper();
 
 
-//    @Test
-//    void getMedicalRecordss_ShouldReturnOK() throws Exception {
-//        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-//        MedicalRecordsDTO medicalRecordsDTO = new MedicalRecordsDTO(medicalRecord);
-//        when(medicalRecordService.getMedicalRecords()).thenReturn(singletonList(medicalRecordsDTO));
-//        mockMvc.perform(get("/medicalRecords")).andExpect(status().isOk());
-//    }
-
     @Test
     void getMedicalRecordss_ShouldReturnNotFound() throws Exception {
         when(medicalRecordService.getMedicalRecords()).thenThrow(NoSuchElementException.class);
@@ -68,12 +61,26 @@ public class MedicalRecordsControllerTest {
         mockMvc.perform(get("/medicalRecord/1")).andExpect(status().isNotFound());
     }
 
-//    @Test
-//    void createMedicalRecords_ShouldReturnOk() throws Exception {
-//        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-//        when(medicalRecordService.addMedicalRecord(any())).thenReturn(medicalRecord);
-//        mockMvc.perform(get("/medicalRecord/1")).andExpect(status().isOk());
-//    }
+    @Test
+    void createMedicalRecords_ShouldReturnOk() throws Exception {
+        List<String> medications = new ArrayList<>();
+        List<String> allergies = new ArrayList<>();
+
+        ObjectMapper obj = new ObjectMapper();
+        MedicalRecords medicalRecords = new MedicalRecords();
+        medicalRecords.setIdMedicalRecords(1L);
+        medicalRecords.setBirthdate("1");
+        medicalRecords.setMedications(medications);
+        medicalRecords.setAllergies(allergies);
+
+
+        when(medicalRecordService.addMedicalRecord(any())).thenReturn(medicalRecords);
+        mockMvc.perform(post("/medicalRecord")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(obj.writeValueAsString(medicalRecords)))
+                .andExpect(status().isOk());
+
+    }
 
     @Test
     void createMedicalRecords_ShouldReturnBadRequest() throws Exception {
@@ -81,53 +88,51 @@ public class MedicalRecordsControllerTest {
         mockMvc.perform(post("/medicalRecord")).andExpect(status().isBadRequest());
     }
 
-//    @Test
-//    public void updateMedicalRecords_shouldReturnNoSuchElement() throws Exception {
-//        when(medicalRecordService.updateMedicalRecords(any(), any())).thenThrow(NoSuchElementException.class);
-//        mockMvc.perform(put("/medicalRecord/1").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    public void updateMedicalRecords_shouldReturnOk() throws Exception {
-//        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-//        when(medicalRecordService.updateMedicalRecords(any(), any())).thenReturn(medicalRecord);
-//        mockMvc.perform(put("/medicalRecord/1").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isOk());
-//    }
+    @Test
+    public void updateMedicalRecords_shouldReturnNoSuchElement() throws Exception {
+        when(medicalRecordService.updateMedicalRecords(any(), any())).thenThrow(NoSuchElementException.class);
+        mockMvc.perform(put("/medicalRecord/1").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isNotFound());
+    }
 
-//    @Test
-//    public void deleteMedicalRecords_shouldReturnOk() throws Exception {
-//        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-//        doNothing().when(medicalRecordService).deleteMedicalRecord(any());
-//        when(medicalRecordService.getMedicalRecord(any())).thenReturn(medicalRecord);
-//        mockMvc.perform(delete("/medicalRecord/1")).andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    public void deleteMedicalRecords_shouldReturnNotFound() throws Exception {
-//        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-//        doNothing().when(medicalRecordService).deleteMedicalRecord(any());
-//        when(medicalRecordService.getMedicalRecord(any())).thenThrow(NoSuchElementException.class);
-//        mockMvc.perform(delete("/medicalRecord/1")).andExpect(status().isNotFound());
-//    }
-//
-//    @Test
-//    public void deleteMedicalRecords_shouldReturnBadRequest() throws Exception {
-//        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-//        doNothing().when(medicalRecordService).deleteMedicalRecord(any());
-//        when(medicalRecordService.getMedicalRecord(any())).thenThrow(IllegalArgumentException.class);
-//        mockMvc.perform(delete("/medicalRecord/1")).andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    public void deleteMedicalRecords_shouldReturnIllegalArgumentException() throws Exception {
-//        when(medicalRecordService.getMedicalRecords()).thenThrow(IllegalArgumentException.class);
-//        mockMvc.perform(delete("/medicalRecords")).andExpect(status().isNoContent());
-//    }
-//
-//    @Test
-//    public void deleteMedicalRecords_shouldReturnNoContent() throws Exception {
-//        MedicalRecordsEntity medicalRecord = new MedicalRecordsEntity();
-//        medicalRecordService.addMedicalRecord(medicalRecord);
-//        mockMvc.perform(delete("/medicalRecords")).andExpect(status().isNoContent());
-//    }
+    @Test
+    public void updateMedicalRecords_shouldReturnOk() throws Exception {
+        MedicalRecords medicalRecord = new MedicalRecords();
+        when(medicalRecordService.updateMedicalRecords(any(), any())).thenReturn(medicalRecord);
+        mockMvc.perform(put("/medicalRecord/1").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteMedicalRecords_shouldReturnOk() throws Exception {
+        MedicalRecords medicalRecord = new MedicalRecords();
+        doNothing().when(medicalRecordService).deleteMedicalRecord(any());
+        when(medicalRecordService.getMedicalRecord(any())).thenReturn(medicalRecord);
+        mockMvc.perform(delete("/medicalRecord/1")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteMedicalRecords_shouldReturnNotFound() throws Exception {
+        doNothing().when(medicalRecordService).deleteMedicalRecord(any());
+        when(medicalRecordService.getMedicalRecord(any())).thenThrow(NoSuchElementException.class);
+        mockMvc.perform(delete("/medicalRecord/1")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteMedicalRecords_shouldReturnBadRequest() throws Exception {
+        doNothing().when(medicalRecordService).deleteMedicalRecord(any());
+        when(medicalRecordService.getMedicalRecord(any())).thenThrow(IllegalArgumentException.class);
+        mockMvc.perform(delete("/medicalRecord/1")).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void deleteMedicalRecords_shouldReturnIllegalArgumentException() throws Exception {
+        when(medicalRecordService.getMedicalRecords()).thenThrow(IllegalArgumentException.class);
+        mockMvc.perform(delete("/medicalRecords")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deleteMedicalRecords_shouldReturnNoContent() throws Exception {
+        MedicalRecordsRequest medicalRecord = new MedicalRecordsRequest();
+        medicalRecordService.addMedicalRecord(medicalRecord);
+        mockMvc.perform(delete("/medicalRecords")).andExpect(status().isNoContent());
+    }
 }

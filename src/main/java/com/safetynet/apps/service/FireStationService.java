@@ -1,7 +1,7 @@
 package com.safetynet.apps.service;
 
 
-import com.safetynet.apps.controller.FireStationRequest;
+import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.mapper.FireStationConverter;
 import com.safetynet.apps.model.entity.FireStationEntity;
 import com.safetynet.apps.model.repository.FireStationRepository;
