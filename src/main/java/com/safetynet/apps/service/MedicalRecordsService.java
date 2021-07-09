@@ -1,9 +1,12 @@
 package com.safetynet.apps.service;
 
 import com.safetynet.apps.controller.dto.MedicalRecords.MedicalRecordsRequest;
+import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.mapper.MedicalRecordsConverter;
 import com.safetynet.apps.model.entity.MedicalRecordsEntity;
+import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.MedicalRecordsRepository;
+import com.safetynet.apps.model.repository.PersonRepository;
 import com.safetynet.apps.service.data.MedicalRecords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,10 @@ public class MedicalRecordsService {
 
     @Autowired
     private MedicalRecordsConverter medicalRecordsConverter;
+
+    @Autowired
+    private PersonRepository personRepository;
+
 
     public List<MedicalRecords> getMedicalRecords() {
         return medicalRecordsConverter.mapperMedicalRecords(medicalRecordRepository.findAll());
@@ -37,16 +44,32 @@ public class MedicalRecordsService {
         medicalRecordRepository.deleteAll();
     }
 
-    public MedicalRecords addMedicalRecord(MedicalRecordsRequest medicalRecord) {
-        MedicalRecordsEntity entity = new MedicalRecordsEntity();
-        entity.setIdMedicalRecords(0L);
-        entity.setMedications(medicalRecord.getMedications());
-        entity.setAllergies(medicalRecord.getAllergies());
-        entity.setBirthDate(medicalRecord.getBirthdate());
+    public MedicalRecords addMedicalRecord(MedicalRecordsRequest medicalRecord, PersonEntity personEntity) {
+        if (medicalRecord == null && personEntity == null) { return null; }
 
-        entity = medicalRecordRepository.save(entity);
+        // Because we have the possibility to create a medicalRecords
+        // so we need to create a Person as well
+        if (medicalRecord != null && personEntity == null) { personEntity = personRepository.save(new PersonEntity()); }
 
-        return medicalRecordsConverter.mapperMedicalRecords(entity);
+
+        MedicalRecordsEntity medicalRecordsEntity = new MedicalRecordsEntity();
+        medicalRecordsEntity.setIdMedicalRecords(0L);
+
+        if (medicalRecord != null) {
+            medicalRecordsEntity.setMedications(medicalRecord.getMedications());
+            medicalRecordsEntity.setAllergies(medicalRecord.getAllergies());
+            medicalRecordsEntity.setBirthDate(medicalRecord.getBirthdate());
+            medicalRecordsEntity.setPersonMedicalRecord(personEntity);
+        }
+
+        medicalRecordsEntity = medicalRecordRepository.save(medicalRecordsEntity);
+
+
+
+        personEntity.setMedicalRecord(medicalRecordsEntity);
+
+        return medicalRecordsConverter.mapperMedicalRecords(medicalRecordsEntity);
+
     }
 
 

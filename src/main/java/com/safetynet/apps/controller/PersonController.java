@@ -47,17 +47,7 @@ public class PersonController {
     @PostMapping("/person")
     public ResponseEntity<Person> createPerson(@RequestBody PersonRequest person) {
         try {
-            PersonEntity entity = new PersonEntity(0L,
-                    person.getFirstName(),
-                    person.getLastName(),
-                    person.getAddress(),
-                    person.getCity(),
-                    person.getZip(),
-                    person.getPhone(),
-                    person.getEmail(),
-                    null
-            );
-            return ResponseEntity.ok(personService.addPerson(/*person*/entity));
+            return ResponseEntity.ok(personService.addPerson(person));
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().build();
         }

@@ -19,7 +19,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PersonServiceTest {
@@ -41,18 +41,17 @@ class PersonServiceTest {
         assertThrows(NoSuchElementException.class, () -> personService.getPerson(1L));
     }
 
-//    @Test
-//    void addPerson_ShouldChangeEntityFromPersonrequest() {
-//        PersonEntity entity = new PersonEntity(0L,"1","2","3","4","5","6","7",null);
-//
-//        PersonRequest personRequest = new PersonRequest("6","2","3","4","5","6","7");
-//        Person person = new Person();
-//        when(personRepository.save(any(PersonEntity.class))).thenReturn(entity);
-//        when(personConverter.mapperPerson(entity)).thenReturn(person);
-//
-//        person = personService.addPerson(personRequest);
-//        assertEquals(person.getFirstName(),"6");
-//    }
+    @Test
+    void addPerson_ShouldChangeEntityFromPersonrequest() {
+        PersonRequest personRequest = new PersonRequest("1","2","3","4","5","6","7", null);
+        PersonEntity personEntity = new PersonEntity(0L,"1","2","3","4","5","6","7", null);
+        Person person = new Person();
+        when(personRepository.save(any(PersonEntity.class))).thenReturn(personEntity);
+        when(personConverter.mapperPerson(personEntity)).thenReturn(person);
+
+        personService.addPerson(personRequest);
+        verify(personRepository,times(1)).save(any());
+    }
 
 
 
@@ -60,7 +59,7 @@ class PersonServiceTest {
     @Test
     void updatePerson_ShouldChangeEntityFromPersonrequest() {
         PersonEntity entity = new PersonEntity    (1L,"1","2","3","4","5","6","7",null);
-        PersonRequest personRequest = new PersonRequest("6","2","3","4","5","6","7");
+        PersonRequest personRequest = new PersonRequest("6","2","3","4","5","6","7",null);
 
         when(personRepository.findById(any(Long.class))).thenReturn(Optional.of(entity));
         when(personRepository.save(entity)).thenReturn(entity);

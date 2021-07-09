@@ -74,7 +74,7 @@ public class MedicalRecordsControllerTest {
         medicalRecords.setAllergies(allergies);
 
 
-        when(medicalRecordService.addMedicalRecord(any())).thenReturn(medicalRecords);
+        when(medicalRecordService.addMedicalRecord(any(), any())).thenReturn(medicalRecords);
         mockMvc.perform(post("/medicalRecord")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(obj.writeValueAsString(medicalRecords)))
@@ -132,7 +132,7 @@ public class MedicalRecordsControllerTest {
     @Test
     public void deleteMedicalRecords_shouldReturnNoContent() throws Exception {
         MedicalRecordsRequest medicalRecord = new MedicalRecordsRequest();
-        medicalRecordService.addMedicalRecord(medicalRecord);
+        medicalRecordService.addMedicalRecord(medicalRecord, null);
         mockMvc.perform(delete("/medicalRecords")).andExpect(status().isNoContent());
     }
 }

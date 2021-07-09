@@ -75,6 +75,7 @@ class PersonControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(obj.writeValueAsString(person)))
                 .andExpect(status().isOk());
+
     }
 
     @Test
@@ -127,8 +128,8 @@ class PersonControllerTest {
 
     @Test
     public void deletePersons_shouldReturnNoContent() throws Exception {
-        PersonEntity person = new PersonEntity();
-        personService.addPerson(person);
+        PersonRequest personRequest = new PersonRequest();
+        personService.addPerson(personRequest);
         mockMvc.perform(delete("/persons")).andExpect(status().isNoContent());
     }
 

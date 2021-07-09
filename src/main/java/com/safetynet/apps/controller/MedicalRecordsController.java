@@ -45,7 +45,7 @@ public class MedicalRecordsController {
     @PostMapping("/medicalRecord")
     public ResponseEntity<MedicalRecords> createMedicalRecord(@RequestBody MedicalRecordsRequest medicalRecords) {
         try {
-            return ResponseEntity.ok(medicalRecordsService.addMedicalRecord(medicalRecords));
+            return ResponseEntity.ok(medicalRecordsService.addMedicalRecord(medicalRecords, null));
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().build();
         }

@@ -1,8 +1,12 @@
 package com.safetynet.apps.controller.dto.Person;
 
+import com.safetynet.apps.controller.dto.MedicalRecords.MedicalRecordsRequest;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,4 +26,6 @@ public class PersonRequest {
     private String phone;
 
     private String email;
+
+    private MedicalRecordsRequest medicalRecords;
 }
