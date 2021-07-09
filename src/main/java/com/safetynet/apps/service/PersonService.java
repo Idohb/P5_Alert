@@ -65,11 +65,10 @@ public class PersonService {
         // tentative de création de MedicalRecords dans la condition ci dessous
         // Les données de MedicalRecords sont récupérées par personRequest
         // qui possède MedicalRecordsRequest
-        if (personRequest.getMedicalRecords() != null) {
-            medicalRecordsService.addMedicalRecord(personRequest.getMedicalRecords(),entity);
-        }
+        medicalRecordsService.addMedicalRecord(personRequest.getMedicalRecords(),entity);
 
-        //faire une méthode qui fait un update de FireStation
+
+        // faire une méthode qui fait un update de FireStation
         // selon la nouvelle adresse de Person.
 
         //!\\ //!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\

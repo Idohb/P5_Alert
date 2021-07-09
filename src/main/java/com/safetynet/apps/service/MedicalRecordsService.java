@@ -45,12 +45,14 @@ public class MedicalRecordsService {
     }
 
     public MedicalRecords addMedicalRecord(MedicalRecordsRequest medicalRecord, PersonEntity personEntity) {
-        if (medicalRecord == null && personEntity == null) { return null; }
 
         // Because we have the possibility to create a medicalRecords
         // so we need to create a Person as well
-        if (medicalRecord != null && personEntity == null) { personEntity = personRepository.save(new PersonEntity()); }
-
+        if (medicalRecord != null && personEntity == null) {
+            personEntity = personRepository.save(new PersonEntity(
+            0L, null, null, null, null, null, null, null, null)
+            );
+        }
 
         MedicalRecordsEntity medicalRecordsEntity = new MedicalRecordsEntity();
         medicalRecordsEntity.setIdMedicalRecords(0L);
@@ -63,9 +65,6 @@ public class MedicalRecordsService {
         }
 
         medicalRecordsEntity = medicalRecordRepository.save(medicalRecordsEntity);
-
-
-
         personEntity.setMedicalRecord(medicalRecordsEntity);
 
         return medicalRecordsConverter.mapperMedicalRecords(medicalRecordsEntity);
