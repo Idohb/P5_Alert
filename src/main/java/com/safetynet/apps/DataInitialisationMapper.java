@@ -37,6 +37,12 @@ public class DataInitialisationMapper implements ApplicationRunner {
 
         JsonIterator iter = JsonIterator.parse(bytesFile);
         Any any = iter.readAny();
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+
+
         Any personAny = any.get("persons");
         List<PersonEntity> persons = new ArrayList<>();
         personAny.forEach(a -> persons.add( PersonEntity.builder().firstName(a.get("firstName").toString())
@@ -51,6 +57,9 @@ public class DataInitialisationMapper implements ApplicationRunner {
         personService.addPersons(persons);
 //        persons.forEach(p -> System.out.println(p.getFirstName().concat(p.getLastName()).concat(p.getAddress()).concat(p.getCity()).concat(p.getPhone()).concat(p.getZip())));
 
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
 
         Any fireStationAny = any.get("firestations");
         List<FireStationEntity> fireStations = new ArrayList<>();
@@ -58,9 +67,20 @@ public class DataInitialisationMapper implements ApplicationRunner {
                 .station(a.get("station").toString())
                 .build()));
 
-
+        fireStationService.attributePersonToFireStation(persons, fireStations);
         fireStationService.addFireStations(fireStations);
+        personService.addPersons(persons);
+
 //        fireStations.forEach(p -> System.out.println(p.getAddress().concat(p.getStation())));
+        for(FireStationEntity fireStationEntity : fireStations) {
+            fireStationService.listAllPersonFromFireStation(fireStationEntity);
+        }
+
+
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////
+
 
         Any medicalRecordsAny = any.get("medicalrecords");
         List<MedicalRecordsEntity> medicalRecords = new ArrayList<>();
@@ -75,6 +95,8 @@ public class DataInitialisationMapper implements ApplicationRunner {
 
         medicalRecordsService.addMedicalRecords(medicalRecords);
 //        medicalRecords.forEach(p -> System.out.println(p.getBirthDate()));
+
+
     }
 }
 

@@ -28,7 +28,7 @@ public class FireStationEntity implements Serializable {
     @Column
     private String station;
 
-    @OneToMany
-    private List<PersonEntity> personFireStation = new ArrayList<>();
+    @ManyToMany
+    private List<PersonEntity> personFireStation;
 
 }

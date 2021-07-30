@@ -1,5 +1,6 @@
 package com.safetynet.apps.controller.dto.Person;
 
+import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.controller.dto.MedicalRecords.MedicalRecordsRequest;
 
 import lombok.AllArgsConstructor;

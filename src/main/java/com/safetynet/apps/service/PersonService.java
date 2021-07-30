@@ -2,9 +2,11 @@ package com.safetynet.apps.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.JsonIterator;
+import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.mapper.MedicalRecordsConverter;
 import com.safetynet.apps.mapper.PersonConverter;
+import com.safetynet.apps.model.entity.FireStationEntity;
 import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.MedicalRecordsRepository;
@@ -15,6 +17,7 @@ import org.hibernate.annotations.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -30,6 +33,9 @@ public class PersonService {
 
     @Autowired
     MedicalRecordsService medicalRecordsService;
+
+    @Autowired
+    FireStationService fireStationService;
 
     public List<Person> getPersons() {
         return personConverter.mapperPerson( personRepository.findAll());
@@ -57,8 +63,7 @@ public class PersonService {
                 personRequest.getZip(),
                 personRequest.getPhone(),
                 personRequest.getEmail(),
-                null
-        );
+                null,null);
         entity = personRepository.save(entity);
 
 
@@ -70,6 +75,8 @@ public class PersonService {
 
         // faire une méthode qui fait un update de FireStation
         // selon la nouvelle adresse de Person.
+
+        attributePersonToFireStation(entity);
 
         //!\\ //!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\
         //!\\ //!\\ Configurer une base de donnée de test //!\\ //!\\
@@ -112,6 +119,14 @@ public class PersonService {
 
     }
 
+
+    private void attributePersonToFireStation(PersonEntity personEntity) {
+        List<PersonEntity> personEntityList = fireStationService.matchAddressPersonFireStation(personEntity);
+
+        FireStationEntity fireStationEntity = new FireStationEntity(0L,null,null,personEntityList);
+        FireStationRequest fireStationRequest = new FireStationRequest(null,null);
+        fireStationService.addFireStation(fireStationRequest);
+    }
 
     public Iterable<PersonEntity> addPersons(List<PersonEntity> persons) {
         return personRepository.saveAll(persons);

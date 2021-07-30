@@ -13,4 +13,5 @@ public class FireStationRequest {
 
   private String station;
 
+
 }

@@ -13,6 +13,9 @@ public class PersonConverter {
     @Autowired
     private MedicalRecordsConverter medicalRecordsConverter;
 
+    @Autowired
+    private FireStationConverter fireStationConverter;
+
     public Person mapperPerson(PersonEntity personEntity) {
         Person person = new Person();
 
@@ -26,8 +29,11 @@ public class PersonConverter {
         person.setPhone(personEntity.getPhone());
 
         if(personEntity.getMedicalRecord() != null) {
-            System.out.println(personEntity.getMedicalRecord().getBirthDate());
             person.setMedicalRecords(medicalRecordsConverter.mapperMedicalRecords(personEntity.getMedicalRecord()));
+        }
+
+        if(personEntity.getFireStationEntity() != null) {
+            person.setFireStation(fireStationConverter.mapperFireStation(personEntity.getFireStationEntity()));
         }
 
         return person;

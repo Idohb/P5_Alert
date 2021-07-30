@@ -38,7 +38,8 @@ public class PersonServiceIT {
             person.setPhone("6");
             person.setEmail("7");
             person.setMedicalRecords(null);
-        PersonEntity personEntity = new PersonEntity(0L,"1","2","3","4","5","6","7",null);
+            person.setFireStation(null);
+        PersonEntity personEntity = new PersonEntity(0L,"1","2","3","4","5","6","7",null,null);
         PersonRequest personEntityRequested = new PersonRequest("1","2","3","4","5","6","7", null);
         when(personRepository.save(any(PersonEntity.class))).thenReturn(personEntity);
         when(personConverter.mapperPerson(any(PersonEntity.class))).thenReturn(person);

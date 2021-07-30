@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Builder
 @NoArgsConstructor
@@ -43,5 +44,8 @@ public class PersonEntity implements Serializable {
 
     @OneToOne(mappedBy = "personMedicalRecord")
     private MedicalRecordsEntity medicalRecord;
+
+    @ManyToMany(mappedBy = "personFireStation")
+    private List<FireStationEntity> fireStationEntity;
 
 }
