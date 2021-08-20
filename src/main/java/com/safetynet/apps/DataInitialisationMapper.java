@@ -14,9 +14,13 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Component
@@ -31,37 +35,42 @@ public class DataInitialisationMapper implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        String filePath = "src/main/resources/json/data.json";
+        //open file json
+        Any any = this.readJson("src/main/resources/json/data.json");
 
+        // Fill attribute of Persons to database
+        List<PersonEntity> persons = this.fillPerson(any.get("persons"));
+
+        // Fill attribute of FireStation and MedicalRecords to database
+        this.fillFireStation   (any.get("firestations")  , persons);
+        this.fillMedicalRecords(any.get("medicalrecords"), persons);
+
+    }
+
+    private Any readJson(String filePath) throws IOException {
         byte[] bytesFile = Files.readAllBytes(new File(filePath).toPath());
-
         JsonIterator iter = JsonIterator.parse(bytesFile);
-        Any any = iter.readAny();
+        return iter.readAny();
+    }
 
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
+    private List<PersonEntity> fillPerson(Any personAny) {
 
-
-        Any personAny = any.get("persons");
         List<PersonEntity> persons = new ArrayList<>();
         personAny.forEach(a -> persons.add( PersonEntity.builder().firstName(a.get("firstName").toString())
-                .address(a.get("address").toString())
-                .city(a.get("city").toString())
+                .address (a.get("address").toString())
+                .city    (a.get("city").toString())
                 .lastName(a.get("lastName").toString())
-                .phone(a.get("phone").toString())
-                .zip(a.get("zip").toString())
-                .email(a.get("email").toString())
+                .phone   (a.get("phone").toString())
+                .zip     (a.get("zip").toString())
+                .email   (a.get("email").toString())
                 .build()));
-
         personService.addPersons(persons);
-//        persons.forEach(p -> System.out.println(p.getFirstName().concat(p.getLastName()).concat(p.getAddress()).concat(p.getCity()).concat(p.getPhone()).concat(p.getZip())));
 
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
+        return persons;
+    }
 
-        Any fireStationAny = any.get("firestations");
+    private List<FireStationEntity>  fillFireStation(Any fireStationAny, List<PersonEntity> persons) {
+
         List<FireStationEntity> fireStations = new ArrayList<>();
         fireStationAny.forEach(a -> fireStations.add( FireStationEntity.builder().address(a.get("address").toString())
                 .station(a.get("station").toString())
@@ -71,33 +80,40 @@ public class DataInitialisationMapper implements ApplicationRunner {
         fireStationService.addFireStations(fireStations);
         personService.addPersons(persons);
 
-//        fireStations.forEach(p -> System.out.println(p.getAddress().concat(p.getStation())));
+        //fireStations.forEach(p -> System.out.println(p.getAddress().concat(p.getStation())));
         for(FireStationEntity fireStationEntity : fireStations) {
             fireStationService.listAllPersonFromFireStation(fireStationEntity);
         }
 
 
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
-        //////////////////////////////////////////////////////////////////////////////////////
+        return fireStations;
+    }
 
-
-        Any medicalRecordsAny = any.get("medicalrecords");
+    private List<MedicalRecordsEntity> fillMedicalRecords(Any medicalRecordsAny , List<PersonEntity> persons) {
         List<MedicalRecordsEntity> medicalRecords = new ArrayList<>();
-        medicalRecordsAny.forEach(a -> medicalRecords.add( MedicalRecordsEntity.builder()
-                .personMedicalRecord(persons.stream().filter( p ->
-                        p.getFirstName().equals(a.get("firstName").toString()) && p.getLastName().equals(a.get("lastName").toString()))
-                        .findFirst().orElse(null))
-                .birthDate(a.get("birthdate").toString())
-                .medications(a.get("medications").asList().stream().map(Any::toString).collect(Collectors.toList()))
-                .allergies(a.get("allergies").asList().stream().map(Any::toString).collect(Collectors.toList()))
-                .build()));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+
+        medicalRecordsAny.forEach(a -> {
+            try {
+                medicalRecords.add( MedicalRecordsEntity.builder()
+                        .personMedicalRecord(persons.stream().filter( p ->
+                                p.getFirstName().equals(a.get("firstName").toString()) && p.getLastName().equals(a.get("lastName").toString()))
+                                .findFirst().orElse(null))
+                        .birthDate  (sdf.parse(a.get("birthdate").toString()))
+                        .medications(a.get("medications").asList().stream().map(Any::toString).collect(Collectors.toList()))
+                        .allergies  (a.get("allergies").asList().stream().map(Any::toString).collect(Collectors.toList()))
+                        .build());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
 
         medicalRecordsService.addMedicalRecords(medicalRecords);
-//        medicalRecords.forEach(p -> System.out.println(p.getBirthDate()));
 
-
+        return medicalRecords;
     }
+
 }
 
 

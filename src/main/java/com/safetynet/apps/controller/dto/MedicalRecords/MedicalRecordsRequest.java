@@ -3,6 +3,8 @@ package com.safetynet.apps.controller.dto.MedicalRecords;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 import java.util.List;
 
 @NoArgsConstructor
@@ -10,7 +12,7 @@ import java.util.List;
 @Data
 public class MedicalRecordsRequest {
 
-    private String birthdate;
+    private Date birthdate;
     private List<String> medications;
     private List<String> allergies;
 

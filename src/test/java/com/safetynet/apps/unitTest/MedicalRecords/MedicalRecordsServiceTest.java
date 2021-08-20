@@ -17,10 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -76,11 +75,14 @@ public class MedicalRecordsServiceTest {
 //    }
 
     @Test
-    void updatePerson_ShouldChangeEntityFromPersonrequest() {
+    void updatePerson_ShouldChangeEntityFromPersonrequest() throws ParseException {
         List<String> medications = new ArrayList<>();
         List<String> allergies = new ArrayList<>();
-        MedicalRecordsEntity entity = new MedicalRecordsEntity(1L,null,"1",medications,allergies);
-        MedicalRecordsRequest personRequest = new MedicalRecordsRequest("2",medications,allergies);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+        MedicalRecordsEntity entity = new MedicalRecordsEntity(1L,null,sdf.parse("11/11/1998"),medications,allergies);
+        MedicalRecordsRequest personRequest = new MedicalRecordsRequest(sdf.parse("11/11/1999"),medications,allergies);
 
         when(medicalRecordsRepository.findById(any(Long.class))).thenReturn(Optional.of(entity));
         when(medicalRecordsRepository.save(entity)).thenReturn(entity);
@@ -90,10 +92,11 @@ public class MedicalRecordsServiceTest {
     }
 
     @Test
-    void updatePerson_ShouldNotChangeEntityFromPersonrequest() {
+    void updatePerson_ShouldNotChangeEntityFromPersonrequest() throws ParseException {
         List<String> medications = new ArrayList<>();
         List<String> allergies = new ArrayList<>();
-        MedicalRecordsEntity entity = new MedicalRecordsEntity(1L,null,"1",medications,allergies);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        MedicalRecordsEntity entity = new MedicalRecordsEntity(1L,null,sdf.parse("11/11/1998"),medications,allergies);
         MedicalRecordsRequest personRequest = new MedicalRecordsRequest();
 
         when(medicalRecordsRepository.findById(any(Long.class))).thenReturn(Optional.of(entity));

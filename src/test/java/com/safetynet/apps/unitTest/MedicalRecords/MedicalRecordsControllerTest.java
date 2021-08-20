@@ -13,8 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -65,11 +67,11 @@ public class MedicalRecordsControllerTest {
     void createMedicalRecords_ShouldReturnOk() throws Exception {
         List<String> medications = new ArrayList<>();
         List<String> allergies = new ArrayList<>();
-
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         ObjectMapper obj = new ObjectMapper();
         MedicalRecords medicalRecords = new MedicalRecords();
         medicalRecords.setIdMedicalRecords(1L);
-        medicalRecords.setBirthdate("1");
+        medicalRecords.setBirthdate(sdf.parse("11/11/1998"));
         medicalRecords.setMedications(medications);
         medicalRecords.setAllergies(allergies);
 

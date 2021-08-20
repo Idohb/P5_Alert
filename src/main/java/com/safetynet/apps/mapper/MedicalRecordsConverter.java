@@ -18,10 +18,11 @@ public class MedicalRecordsConverter {
         medicalRecords.setMedications(medicalRecordsEntity.getMedications());
         medicalRecords.setAllergies(medicalRecordsEntity.getAllergies());
         return medicalRecords;
+
     }
 
     public List<MedicalRecords> mapperMedicalRecords(List<MedicalRecordsEntity> medicalRecordsEntity) {
         return medicalRecordsEntity.stream().map(this::mapperMedicalRecords).collect(Collectors.toList());
     }
-    
+
 }

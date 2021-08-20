@@ -3,11 +3,13 @@ package com.safetynet.apps.service;
 
 import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.mapper.FireStationConverter;
+import com.safetynet.apps.mapper.PersonConverter;
 import com.safetynet.apps.model.entity.FireStationEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.FireStationRepository;
 import com.safetynet.apps.model.repository.PersonRepository;
 import com.safetynet.apps.service.data.FireStation;
+import com.safetynet.apps.service.data.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +58,14 @@ public class FireStationService {
 
         entity = fireStationRepository.save(entity);
 
+        List<FireStationEntity> fireStationEntityList = fireStationRepository.findAll();
+        List<PersonEntity> personEntityList = personRepository.findAll();
+
+        attributePersonToFireStation(personEntityList, fireStationEntityList);
+
+        for(FireStationEntity fireStationEntity : fireStationEntityList) {
+            listAllPersonFromFireStation(fireStationEntity);
+        }
         return fireStationConverter.mapperFireStation(entity);
     }
 
@@ -104,7 +114,7 @@ public class FireStationService {
         List<PersonEntity> personEntityList = fireStationEntity.getPersonFireStation();
         System.out.println("FireStation number : " + fireStationEntity.getStation() + " address : " + fireStationEntity.getAddress());
         for (PersonEntity personEntity : personEntityList) {
-            System.out.println("Person : " + personEntity.getFirstName() + "/" + personEntity.getLastName() + " firestation " + personEntity.getFireStationEntity());
+            System.out.println("Person : " + personEntity.getFirstName() + "/" + personEntity.getLastName());
 
         }
     }
@@ -127,5 +137,8 @@ public class FireStationService {
         return personEntityList;
 
     }
+
+
+
 
 }

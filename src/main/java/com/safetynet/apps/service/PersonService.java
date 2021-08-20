@@ -1,27 +1,24 @@
 package com.safetynet.apps.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jsoniter.JsonIterator;
+
 import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.controller.dto.Person.PersonRequest;
-import com.safetynet.apps.mapper.MedicalRecordsConverter;
 import com.safetynet.apps.mapper.PersonConverter;
 import com.safetynet.apps.model.entity.FireStationEntity;
-import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
-import com.safetynet.apps.model.repository.MedicalRecordsRepository;
+import com.safetynet.apps.model.repository.FireStationRepository;
 import com.safetynet.apps.model.repository.PersonRepository;
-import com.safetynet.apps.service.data.MedicalRecords;
 import com.safetynet.apps.service.data.Person;
-import org.hibernate.annotations.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneOffset;
+
+import java.util.*;
+
 
 @Service
 public class PersonService {
@@ -32,10 +29,13 @@ public class PersonService {
     private PersonConverter personConverter;
 
     @Autowired
-    MedicalRecordsService medicalRecordsService;
+    private MedicalRecordsService medicalRecordsService;
 
     @Autowired
-    FireStationService fireStationService;
+    private FireStationService fireStationService;
+
+    @Autowired
+    private FireStationRepository fireStationRepository;
 
     public List<Person> getPersons() {
         return personConverter.mapperPerson( personRepository.findAll());
@@ -72,15 +72,7 @@ public class PersonService {
         // qui possède MedicalRecordsRequest
         medicalRecordsService.addMedicalRecord(personRequest.getMedicalRecords(),entity);
 
-
-        // faire une méthode qui fait un update de FireStation
-        // selon la nouvelle adresse de Person.
-
         attributePersonToFireStation(entity);
-
-        //!\\ //!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\
-        //!\\ //!\\ Configurer une base de donnée de test //!\\ //!\\
-        //!\\ //!\\ //!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\//!\\
 
         return personConverter.mapperPerson(entity);
     }
@@ -130,5 +122,113 @@ public class PersonService {
 
     public Iterable<PersonEntity> addPersons(List<PersonEntity> persons) {
         return personRepository.saveAll(persons);
+    }
+
+
+    private List<Person> matchPersonWithStation(List<FireStationEntity> fireStationEntityList) {
+        List<PersonEntity> personList = new ArrayList<>();
+        for(FireStationEntity fe : fireStationEntityList) {
+            List<PersonEntity> personEntityList = fe.getPersonFireStation();
+            for(PersonEntity pe : personEntityList) {
+                personList.add(pe);
+            }
+        }
+        return personConverter.mapperPerson(personList);
+    }
+
+    public List<Person> getStation(String id) {
+        return matchPersonWithStation(fireStationRepository.findByStation(id));
+    }
+
+    private List<Person> matchChildrenWithAddress(List<PersonEntity> personEntityList) {
+
+        List<PersonEntity> personList = new ArrayList<>();
+
+        LocalDateTime localCurrentDateTime = LocalDateTime.now().minus(Period.ofYears(18));
+        Date date18YearsBefore = Date.from(localCurrentDateTime.toInstant(ZoneOffset.UTC));
+
+        for(PersonEntity pe : personEntityList) {
+            if(pe.getMedicalRecord()
+                    .getBirthDate()
+                    .after(date18YearsBefore))
+            {
+                personList.add(pe);
+            }
+        }
+
+        return personConverter.mapperPerson(personList);
+    }
+
+    public List<Person> getChildAlert(String address) {
+        return matchChildrenWithAddress(personRepository.findByAddress(address));
+    }
+
+    private Map<String, Object> matchPhoneNumberOfStation(List<FireStationEntity> fireStationEntityList) {
+        Map<String, Object> map = new HashMap<>();
+
+        for(FireStationEntity fe : fireStationEntityList) {
+            for(PersonEntity pe : fe.getPersonFireStation())
+                map.put(pe.getFirstName() + " " + pe.getLastName(), pe.getPhone());
+        }
+
+        return map;
+    }
+
+    public Map<String, Object> getPhoneNumberOfFireStation(String stationNumber) {
+        return matchPhoneNumberOfStation(fireStationRepository.findByStation(stationNumber));
+    }
+
+    private Map<String, Object> matchPersonAlertForFireAtAddress(List<PersonEntity> personEntityList) {
+        Map<String, Object> map = new HashMap<>();
+
+        for(PersonEntity pe : personEntityList) {
+            for (FireStationEntity fe : pe.getFireStationEntity())
+                map.put(pe.getFirstName() + " " + pe.getLastName(), fe.getStation());
+        }
+
+        return map;
+    }
+
+    public List<Person> getFire(String address) {
+        return personConverter.mapperPerson(personRepository.findByAddress(address));
+    }
+
+    private List<Person> listPersonFromListOfStation(String stations) {
+        List<PersonEntity> personEntityList = new ArrayList<>();
+
+        String [] listStations = stations.split(",");
+
+        for (String station : listStations) {
+            List<FireStationEntity> fireStationEntityList = fireStationRepository.findByStation(station);
+            for (FireStationEntity fe : fireStationEntityList) {
+                for( PersonEntity pe : fe.getPersonFireStation()){
+                    personEntityList.add(pe);
+                }
+            }
+        }
+        return personConverter.mapperPerson(personEntityList);
+    }
+
+    public List<Person> getListPersonFromListOfStation(String stations) {
+        return listPersonFromListOfStation(stations);
+    }
+
+    public List<Person> getListPersonInfoFromName(String firstName, String lastName) {
+        return personConverter.mapperPerson(personRepository.findByFirstNameAndLastName(firstName,lastName));
+    }
+
+    private Map<String, Object> matchEmailFromCity(List<PersonEntity> personEntityList) {
+        Map<String, Object> map = new HashMap<>();
+
+        for(PersonEntity pe : personEntityList) {
+                map.put(pe.getFirstName() + " " + pe.getLastName(), pe.getEmail());
+        }
+
+        return map;
+    }
+
+
+    public Map<String, Object> getEmailFromCity(String city) {
+        return matchEmailFromCity(personRepository.findByCity(city));
     }
 }

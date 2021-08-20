@@ -3,6 +3,7 @@ package com.safetynet.apps.controller;
 import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.service.FireStationService;
 import com.safetynet.apps.service.data.FireStation;
+import com.safetynet.apps.service.data.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class FireStationController {
             return ResponseEntity.ok(fireStationService.getFireStations());
     }
 
-    @GetMapping("fireStation/{id}")
+    @GetMapping("fireStation/{id}") //localhost:8080/fireStation?station=3
     public ResponseEntity<FireStation> getFireStation(@PathVariable("id") final Long id) {
         try {
             return ResponseEntity.ok(fireStationService.getFireStation(id));
@@ -36,6 +37,9 @@ public class FireStationController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
 
     @PostMapping("/fireStation")
     public ResponseEntity<FireStation> createFireStation(@RequestBody FireStationRequest fireStation) {

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Builder
@@ -25,7 +26,7 @@ public class MedicalRecordsEntity implements Serializable {
     private PersonEntity personMedicalRecord;
 
     @Column
-    private String birthDate;
+    private Date birthDate;
 
     @ElementCollection
     private List<String> medications;

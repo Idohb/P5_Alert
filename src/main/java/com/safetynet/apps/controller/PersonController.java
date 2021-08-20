@@ -3,6 +3,7 @@ package com.safetynet.apps.controller;
 
 import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.model.entity.PersonEntity;
+import com.safetynet.apps.service.FireStationService;
 import com.safetynet.apps.service.PersonService;
 import com.safetynet.apps.service.data.Person;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class PersonController {
 
     @Autowired
     private PersonService personService;
+
+    @Autowired
+    private FireStationService fireStationService;
 
 
     /**
@@ -50,6 +54,70 @@ public class PersonController {
             return ResponseEntity.ok(personService.addPerson(person));
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("fireStation")
+    public ResponseEntity<List<Person>> getPersonWithStation(@RequestParam("station") final String id) {
+        try {
+            return ResponseEntity.ok(personService.getStation(id));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("childAlert")
+    public ResponseEntity<List<Person>> getChildAlert(@RequestParam("address") final String address) throws Exception {
+        try {
+            return ResponseEntity.ok(personService.getChildAlert(address));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("phoneAlert")
+    public ResponseEntity<Object> getPhoneNumberOfFireStation(@RequestParam("station") final String station) {
+        try {
+            return ResponseEntity.ok(personService.getPhoneNumberOfFireStation(station));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @GetMapping("fire")
+    public ResponseEntity<Object> getFire(@RequestParam("address") final String address) {
+        try {
+            return ResponseEntity.ok(personService.getFire(address));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("flood/stations")
+    public ResponseEntity<Object> getListPersonFromListOfStations(@RequestParam("stations") final String stations) {
+        try {
+            return ResponseEntity.ok(personService.getListPersonFromListOfStation(stations));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("personInfo")
+    public ResponseEntity<Object> getListPersonInfoFromName(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
+        try {
+            return ResponseEntity.ok(personService.getListPersonInfoFromName(firstName,lastName));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("communityEmail")
+    public ResponseEntity<Object> getEmailFromCity(@RequestParam("city") final String city) {
+        try {
+            return ResponseEntity.ok(personService.getEmailFromCity(city));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
