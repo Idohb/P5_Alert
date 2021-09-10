@@ -5,6 +5,7 @@ import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.mapper.PersonConverter;
 import com.safetynet.apps.model.entity.FireStationEntity;
+import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.FireStationRepository;
 import com.safetynet.apps.model.repository.PersonRepository;
@@ -13,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneOffset;
+import java.time.*;
 
 import java.util.*;
 
@@ -38,7 +37,7 @@ public class PersonService {
     private FireStationRepository fireStationRepository;
 
     public List<Person> getPersons() {
-        return personConverter.mapperPerson( personRepository.findAll());
+        return personConverter.mapperPerson(personRepository.findAll());
     }
 
     public Person getPerson(final Long id) {
@@ -63,14 +62,14 @@ public class PersonService {
                 personRequest.getZip(),
                 personRequest.getPhone(),
                 personRequest.getEmail(),
-                null,null);
+                null, null);
         entity = personRepository.save(entity);
 
 
         // tentative de création de MedicalRecords dans la condition ci dessous
         // Les données de MedicalRecords sont récupérées par personRequest
         // qui possède MedicalRecordsRequest
-        medicalRecordsService.addMedicalRecord(personRequest.getMedicalRecords(),entity);
+        medicalRecordsService.addMedicalRecord(personRequest.getMedicalRecords(), entity);
 
         attributePersonToFireStation(entity);
 
@@ -115,8 +114,8 @@ public class PersonService {
     private void attributePersonToFireStation(PersonEntity personEntity) {
         List<PersonEntity> personEntityList = fireStationService.matchAddressPersonFireStation(personEntity);
 
-        FireStationEntity fireStationEntity = new FireStationEntity(0L,null,null,personEntityList);
-        FireStationRequest fireStationRequest = new FireStationRequest(null,null);
+        FireStationEntity fireStationEntity = new FireStationEntity(0L, null, null, personEntityList);
+        FireStationRequest fireStationRequest = new FireStationRequest(null, null);
         fireStationService.addFireStation(fireStationRequest);
     }
 
@@ -125,49 +124,121 @@ public class PersonService {
     }
 
 
-    private List<Person> matchPersonWithStation(List<FireStationEntity> fireStationEntityList) {
-        List<PersonEntity> personList = new ArrayList<>();
-        for(FireStationEntity fe : fireStationEntityList) {
-            List<PersonEntity> personEntityList = fe.getPersonFireStation();
-            for(PersonEntity pe : personEntityList) {
-                personList.add(pe);
+    private Map<String, Object> matchPersonWithStation(List<FireStationEntity> fireStationEntityList) {
+        final int AGE_ENFANT = 18;
+        int adult_number = 0, child_number = 0;
+        Map<String, Object> map = new HashMap<>();
+
+        for (FireStationEntity fe : fireStationEntityList) {
+            for (PersonEntity pe : fe.getPersonFireStation()) {
+                List information = new ArrayList<>();
+                information.add(pe.getAddress());
+                information.add(pe.getPhone());
+                map.put(pe.getFirstName() + " " + pe.getLastName(), information);
+                if (evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate()) <= AGE_ENFANT) {
+                    child_number++;
+                } else {
+                    adult_number++;
+                }
             }
         }
-        return personConverter.mapperPerson(personList);
+        map.put("adult", adult_number);
+        map.put("child", child_number);
+
+        return map;
     }
 
-    public List<Person> getStation(String id) {
+
+    public Map<String, Object> getStation(String id) {
         return matchPersonWithStation(fireStationRepository.findByStation(id));
     }
 
-    private List<Person> matchChildrenWithAddress(List<PersonEntity> personEntityList) {
+//    private List<Person> matchChildrenWithAddress(List<PersonEntity> personEntityList) {
+//
+//        List<PersonEntity> personList = new ArrayList<>();
+//
+//        LocalDateTime localCurrentDateTime = LocalDateTime.now().minus(Period.ofYears(18));
+//        Date date18YearsBefore = Date.from(localCurrentDateTime.toInstant(ZoneOffset.UTC));
+//
+//        for (PersonEntity pe : personEntityList) {
+//            if (pe.getMedicalRecord()
+//                    .getBirthDate()
+//                    .after(date18YearsBefore)) {
+//                personList.add(pe);
+//            }
+//        }
+//
+//        return personConverter.mapperPerson(personList);
+//    }
 
-        List<PersonEntity> personList = new ArrayList<>();
+//    private Map<String, Object> matchPersonWithStation(List<FireStationEntity> fireStationEntityList) {
+//        Map<String, Object> map = new HashMap<>();
+//
+//        for (FireStationEntity fe : fireStationEntityList) {
+//            for (PersonEntity pe : fe.getPersonFireStation()) {
+//                List information = new ArrayList<>();
+//                information.add(pe.getAddress());
+//                information.add(pe.getPhone());
+//                map.put(pe.getFirstName() + " " + pe.getLastName(), information);
+//            }
+//        }
+//
+//        return map;
+//    }
 
-        LocalDateTime localCurrentDateTime = LocalDateTime.now().minus(Period.ofYears(18));
-        Date date18YearsBefore = Date.from(localCurrentDateTime.toInstant(ZoneOffset.UTC));
 
-        for(PersonEntity pe : personEntityList) {
-            if(pe.getMedicalRecord()
-                    .getBirthDate()
-                    .after(date18YearsBefore))
-            {
-                personList.add(pe);
+    private Integer evaluateAgeOfPerson(Date birthdate) {
+        LocalDate currentTime = LocalDate.now();
+//        System.out.println("----");
+//        System.out.println(birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+//        System.out.println(currentTime);
+
+        int age = Period.between(
+                birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                currentTime
+        ).getYears();
+//        System.out.println("age : " + age);
+
+        return age;
+
+    }
+
+
+    private Map<String, Object> matchChildrenWithAddress(List<PersonEntity> personEntityList) {
+        final int AGE_ENFANT = 18;
+
+        Map<String, Object> map = new HashMap<>();
+
+        for (PersonEntity pe : personEntityList) {
+            int age = evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate());
+            if (age <= AGE_ENFANT ) {
+                Map<String, Object> information = new HashMap<>();
+                List <String> family = new ArrayList<>();
+
+                information.put( "Age", age
+                );
+                for (PersonEntity searchFamily : personEntityList) {
+                    if (searchFamily.getLastName().equals(pe.getLastName()) && !searchFamily.getFirstName().equals(pe.getFirstName()))
+                        family.add( searchFamily.getFirstName() + " " + searchFamily.getLastName());
+                }
+                information.put("family", family);
+
+                map.put(pe.getFirstName() + " " + pe.getLastName(), information);
             }
         }
 
-        return personConverter.mapperPerson(personList);
+        return map;
     }
 
-    public List<Person> getChildAlert(String address) {
+    public Map<String, Object> getChildAlert(String address) {
         return matchChildrenWithAddress(personRepository.findByAddress(address));
     }
 
     private Map<String, Object> matchPhoneNumberOfStation(List<FireStationEntity> fireStationEntityList) {
         Map<String, Object> map = new HashMap<>();
 
-        for(FireStationEntity fe : fireStationEntityList) {
-            for(PersonEntity pe : fe.getPersonFireStation())
+        for (FireStationEntity fe : fireStationEntityList) {
+            for (PersonEntity pe : fe.getPersonFireStation())
                 map.put(pe.getFirstName() + " " + pe.getLastName(), pe.getPhone());
         }
 
@@ -178,55 +249,74 @@ public class PersonService {
         return matchPhoneNumberOfStation(fireStationRepository.findByStation(stationNumber));
     }
 
-    private Map<String, Object> matchPersonAlertForFireAtAddress(List<PersonEntity> personEntityList) {
+
+    private Map<String, Object> matchPersonByAddress(List<PersonEntity> personEntityList) {
         Map<String, Object> map = new HashMap<>();
 
         for(PersonEntity pe : personEntityList) {
+            Map<String, Object> info = new HashMap<>();
+            info.put("phone", pe.getPhone());
+            info.put("age", evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate()));
+            info.put("allergies", pe.getMedicalRecord().getAllergies());
+            info.put("medication", pe.getMedicalRecord().getMedications());
+
+            List<String> station = new ArrayList<>();
             for (FireStationEntity fe : pe.getFireStationEntity())
-                map.put(pe.getFirstName() + " " + pe.getLastName(), fe.getStation());
+                station.add(fe.getStation());
+
+            info.put("station", station);
+            map.put(pe.getFirstName() + " " + pe.getLastName() , info);
         }
 
-        return map;
+        return  map;
     }
 
-    public List<Person> getFire(String address) {
-        return personConverter.mapperPerson(personRepository.findByAddress(address));
+    public Map<String, Object> getFire(String address) {
+        return matchPersonByAddress(personRepository.findByAddress(address));
     }
 
-    private List<Person> listPersonFromListOfStation(String stations) {
+
+    private List<PersonEntity> listPersonFromListOfStation(String stations) {
+        Map<String, Object> map = new HashMap<>();
+
+
         List<PersonEntity> personEntityList = new ArrayList<>();
 
-        String [] listStations = stations.split(",");
+        String[] listStations = stations.split(",");
 
         for (String station : listStations) {
+
             List<FireStationEntity> fireStationEntityList = fireStationRepository.findByStation(station);
             for (FireStationEntity fe : fireStationEntityList) {
-                for( PersonEntity pe : fe.getPersonFireStation()){
+                for (PersonEntity pe : fe.getPersonFireStation()) {
                     personEntityList.add(pe);
                 }
             }
+//            map.put("station",personEntityList);
+
         }
-        return personConverter.mapperPerson(personEntityList);
+        return personEntityList;
     }
 
     public List<Person> getListPersonFromListOfStation(String stations) {
-        return listPersonFromListOfStation(stations);
+        return personConverter.mapperPerson(listPersonFromListOfStation(stations));
     }
 
+
     public List<Person> getListPersonInfoFromName(String firstName, String lastName) {
-        return personConverter.mapperPerson(personRepository.findByFirstNameAndLastName(firstName,lastName));
+        return personConverter.mapperPerson(personRepository.findByFirstNameAndLastName(firstName, lastName));
     }
+
 
     private Map<String, Object> matchEmailFromCity(List<PersonEntity> personEntityList) {
         Map<String, Object> map = new HashMap<>();
 
-        for(PersonEntity pe : personEntityList) {
-                map.put(pe.getFirstName() + " " + pe.getLastName(), pe.getEmail());
+        for (PersonEntity pe : personEntityList) {
+            map.put(pe.getFirstName() + " " + pe.getLastName(), pe.getEmail());
         }
 
         return map;
     }
-
 
     public Map<String, Object> getEmailFromCity(String city) {
         return matchEmailFromCity(personRepository.findByCity(city));

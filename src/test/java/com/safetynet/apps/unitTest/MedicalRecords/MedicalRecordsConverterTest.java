@@ -43,7 +43,7 @@ public class MedicalRecordsConverterTest {
         MedicalRecords medicalRecords = medicalRecordsConverter.mapperMedicalRecords( medicalRecordsEntity);
 
         assertThat(medicalRecords.getIdMedicalRecords()).isEqualTo(1L);
-        assertThat(medicalRecords.getBirthdate()).isEqualTo("1");
+        assertThat(medicalRecords.getBirthdate()).isEqualTo(sdf.parse("11/11/2020"));
         assertThat(medicalRecords.getMedications()).isEqualTo(medications);
         assertThat(medicalRecords.getAllergies()).isEqualTo(allergies);
 
@@ -71,7 +71,7 @@ public class MedicalRecordsConverterTest {
         List<MedicalRecords> medicalRecords = medicalRecordsConverter.mapperMedicalRecords( medicalRecordsEntity);
 
         assertThat(medicalRecords.get(0).getIdMedicalRecords()).isEqualTo(1L);
-        assertThat(medicalRecords.get(0).getBirthdate()).isEqualTo("1");
+        assertThat(medicalRecords.get(0).getBirthdate()).isEqualTo(sdf.parse("11/11/1998"));
         assertThat(medicalRecords.get(0).getMedications()).isEqualTo(medications);
         assertThat(medicalRecords.get(0).getAllergies()).isEqualTo(allergies);
 

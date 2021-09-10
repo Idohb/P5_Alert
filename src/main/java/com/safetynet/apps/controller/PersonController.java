@@ -6,6 +6,7 @@ import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.service.FireStationService;
 import com.safetynet.apps.service.PersonService;
 import com.safetynet.apps.service.data.Person;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
+@Slf4j
 public class PersonController {
 
     @Autowired
@@ -31,7 +33,8 @@ public class PersonController {
 
     @GetMapping("persons")
     public ResponseEntity<List<Person>> getPersons() {
-            return ResponseEntity.ok(personService.getPersons());
+        log.info("GET persons");
+        return ResponseEntity.ok(personService.getPersons());
     }
 
 
@@ -40,7 +43,8 @@ public class PersonController {
         try {
             return ResponseEntity.ok(personService.getPerson(id));
         } catch (NoSuchElementException e) {
-            return ResponseEntity.noContent().build();
+            log.error("GET person id error not found");
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -58,7 +62,7 @@ public class PersonController {
     }
 
     @GetMapping("fireStation")
-    public ResponseEntity<List<Person>> getPersonWithStation(@RequestParam("station") final String id) {
+    public ResponseEntity<Object> getPersonWithStation(@RequestParam("station") final String id) {
         try {
             return ResponseEntity.ok(personService.getStation(id));
         } catch (NoSuchElementException e) {
@@ -67,7 +71,7 @@ public class PersonController {
     }
 
     @GetMapping("childAlert")
-    public ResponseEntity<List<Person>> getChildAlert(@RequestParam("address") final String address) throws Exception {
+    public ResponseEntity<Object> getChildAlert(@RequestParam("address") final String address) {
         try {
             return ResponseEntity.ok(personService.getChildAlert(address));
         } catch (NoSuchElementException e) {
@@ -95,7 +99,7 @@ public class PersonController {
     }
 
     @GetMapping("flood/stations")
-    public ResponseEntity<Object> getListPersonFromListOfStations(@RequestParam("stations") final String stations) {
+    public ResponseEntity<List<Person>> getListPersonFromListOfStations(@RequestParam("stations") final String stations) {
         try {
             return ResponseEntity.ok(personService.getListPersonFromListOfStation(stations));
         } catch (NoSuchElementException e) {
@@ -104,7 +108,7 @@ public class PersonController {
     }
 
     @GetMapping("personInfo")
-    public ResponseEntity<Object> getListPersonInfoFromName(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
+    public ResponseEntity<List<Person>> getListPersonInfoFromName(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
         try {
             return ResponseEntity.ok(personService.getListPersonInfoFromName(firstName,lastName));
         } catch (NoSuchElementException e) {

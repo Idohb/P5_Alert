@@ -7,6 +7,7 @@ import com.safetynet.apps.model.entity.FireStationEntity;
 import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.FireStationRepository;
+import com.safetynet.apps.model.repository.PersonRepository;
 import com.safetynet.apps.service.FireStationService;
 import com.safetynet.apps.service.data.FireStation;
 import com.safetynet.apps.service.data.MedicalRecords;
@@ -20,12 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -39,6 +39,9 @@ public class FireStationServiceTest {
 
     @Mock
     private FireStationConverter fireStationConverter;
+
+    @Mock
+    private PersonRepository personRepository;
 
     @InjectMocks
     private FireStationService fireStationService;
@@ -95,5 +98,26 @@ public class FireStationServiceTest {
         Assertions.assertEquals(entity.getAddress(),"1");
     }
 
+
+//    @Test
+//    void matchAddressPersonFireStation_shouldReturnListPersonEntity() throws ParseException {
+//        // Set up PersonEntity
+//        List<PersonEntity> pel = new ArrayList<>();
+//        PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",null,null);
+//
+//        // Set up FireStationEntity
+//        List<FireStationEntity> fireStationEntityList = new ArrayList<>();
+//        FireStationEntity fe = new FireStationEntity(1L,"3","9",pel);
+//
+//        pe.setFireStationEntity(fireStationEntityList);
+//        pel.add(pe);
+//        fireStationEntityList.add(fe);
+//
+//
+//        when(fireStationRepository.findAll()).thenReturn(fireStationEntityList);
+//        List<PersonEntity> personEntityList = fireStationService.matchAddressPersonFireStation(pe);
+//        System.out.println(personEntityList.get(0));
+////        assertThat(personEntityList.get(0).getAddress()).isEqualTo("3");
+//    }
 
 }

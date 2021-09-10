@@ -2,6 +2,7 @@ package com.safetynet.apps.unitTest.Person;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.MAP;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,7 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.apps.controller.PersonController;
 import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.model.entity.PersonEntity;
+import com.safetynet.apps.service.FireStationService;
 import com.safetynet.apps.service.PersonService;
+import com.safetynet.apps.service.data.FireStation;
 import com.safetynet.apps.service.data.Person;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,9 +27,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 @WebMvcTest(controllers = PersonController.class)
@@ -36,7 +37,8 @@ class PersonControllerTest {
 
     @MockBean
     private PersonService personService;
-
+    @MockBean
+    private FireStationService fireStationService;
 
 
     @Test
@@ -53,6 +55,13 @@ class PersonControllerTest {
         Person person = new Person();
         when(personService.getPerson(any())).thenReturn(person);
         mockMvc.perform(get("/person/1")).andExpect(status().isOk());
+    }
+
+    @Test
+    void getPerson_ShouldReturnNoContent() throws Exception {
+        //GIVEN
+        when(personService.getPerson(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/person/1")).andExpect(status().isNotFound());
     }
 
 
@@ -98,6 +107,60 @@ class PersonControllerTest {
     }
 
     @Test
+    public void getListPersonFromListOfStations_shouldReturnOk() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        List<Person> person = new ArrayList<>();
+        when(personService.getListPersonFromListOfStation(any())).thenReturn(person);
+        mockMvc.perform(get("/flood/stations?stations=1,2")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void getPersonWithStation_shouldReturnOk() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        when(personService.getStation(any())).thenReturn(map);
+        mockMvc.perform(get("/fireStation?station=3")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void getChildAlert_shouldReturnOk() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        when(personService.getChildAlert(any())).thenReturn(map);
+        mockMvc.perform(get("/childAlert?address=1")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void getPhoneNumberOfFireStation_shouldReturnOk() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        when(personService.getPhoneNumberOfFireStation(any())).thenReturn(map);
+        mockMvc.perform(get("/phoneAlert?station=3")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void getFire_shouldReturnOk() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        when(personService.getFire(any())).thenReturn(map);
+        mockMvc.perform(get("/fire?address=3")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void getListPersonInfoFromName_shouldReturnOk() throws Exception {
+        List<Person> pl = new ArrayList<>();
+        when(personService.getListPersonInfoFromName(any(),any())).thenReturn(pl);
+        mockMvc.perform(get("/personInfo?firstName=3&lastName=4")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void getEmailFromCity_shouldReturnOk() throws Exception {
+        Map<String, Object> map = new HashMap<>();
+        when(personService.getEmailFromCity(any())).thenReturn(map);
+        mockMvc.perform(get("/communityEmail?city=3")).andExpect(status().isOk());
+    }
+
+
+    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////
+    @Test
     public void deletePerson_shouldReturnOk() throws Exception {
         Person person = new Person();
         doNothing().when(personService).deletePerson(any());
@@ -132,5 +195,7 @@ class PersonControllerTest {
         personService.addPerson(personRequest);
         mockMvc.perform(delete("/persons")).andExpect(status().isNoContent());
     }
+
+
 
 }

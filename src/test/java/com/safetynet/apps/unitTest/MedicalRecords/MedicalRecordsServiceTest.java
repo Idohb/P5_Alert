@@ -6,6 +6,7 @@ import com.safetynet.apps.mapper.MedicalRecordsConverter;
 import com.safetynet.apps.model.entity.MedicalRecordsEntity;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.MedicalRecordsRepository;
+import com.safetynet.apps.model.repository.PersonRepository;
 import com.safetynet.apps.service.MedicalRecordsService;
 import com.safetynet.apps.service.data.MedicalRecords;
 import com.safetynet.apps.service.data.Person;
@@ -24,7 +25,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +35,8 @@ public class MedicalRecordsServiceTest {
     private MedicalRecordsRepository medicalRecordsRepository;
     @Mock
     private MedicalRecordsConverter medicalRecordsConverter;
+    @Mock
+    private PersonRepository personRepository;
 
     @InjectMocks
     private MedicalRecordsService medicalRecordsService;
@@ -57,22 +60,31 @@ public class MedicalRecordsServiceTest {
         assertThrows(NoSuchElementException.class, () -> medicalRecordsService.getMedicalRecord(1L));
     }
 
-//    @Test
-//    void addPerson_ShouldChangeEntityFromPersonrequest() {
-//        List<String> medications = new ArrayList<>();
-//        List<String> allegies = new ArrayList<>();
-//
-//        MedicalRecordsEntity entity = new MedicalRecordsEntity(0L,null,"6",medications,allegies);
-//        MedicalRecords medicalRecords = new MedicalRecords();
-//
-//
-//        MedicalRecordsRequest medicalRecordsRequest = new MedicalRecordsRequest("6",medications,allegies);
-//        Person person = new Person();
-//        when(medicalRecordsRepository.save(any(MedicalRecordsEntity.class))).thenReturn(entity);
-//        when(medicalRecordsConverter.mapperMedicalRecords(entity)).thenReturn(medicalRecords);
-//        MedicalRecords personResult = medicalRecordsService.addMedicalRecord(medicalRecordsRequest, null);
-//        assertEquals(entity.getBirthDate(),"6");
-//    }
+    @Test
+    void addPerson_ShouldChangeEntityFromPersonrequest() throws ParseException {
+        // MedicalRecordsEntity set up
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        List<String> medications = new ArrayList<>();
+        List<String> allergies = new ArrayList<>();
+
+        MedicalRecordsEntity entity = new MedicalRecordsEntity(0L,null,sdf.parse("11/11/1998"),medications,allergies);
+
+        // Create PersonEntity for personRepository calling
+        PersonEntity pe = new PersonEntity(0L, null, null, null, null, null, null, null, null, null);
+
+        // Create MedicalRecordsRequest for MedicalRecordsEntity
+        MedicalRecordsRequest medicalRecordsRequest = new MedicalRecordsRequest(sdf.parse("11/11/1999"),medications,allergies);
+        MedicalRecords medicalRecords = new MedicalRecords();
+
+
+        Person person = new Person();
+        when(medicalRecordsRepository.save(any(MedicalRecordsEntity.class))).thenReturn(entity);
+        when(medicalRecordsConverter.mapperMedicalRecords(entity)).thenReturn(medicalRecords);
+        when(personRepository.save(any(PersonEntity.class))).thenReturn(pe);
+        medicalRecordsService.addMedicalRecord(medicalRecordsRequest, null);
+        verify(medicalRecordsRepository,times(1)).save(any());
+        //assertEquals(entity.getBirthDate(),sdf.parse("11/11/1999"));
+    }
 
     @Test
     void updatePerson_ShouldChangeEntityFromPersonrequest() throws ParseException {
@@ -88,7 +100,7 @@ public class MedicalRecordsServiceTest {
         when(medicalRecordsRepository.save(entity)).thenReturn(entity);
         when(medicalRecordsConverter.mapperMedicalRecords(any(MedicalRecordsEntity.class))).thenReturn(null);
         medicalRecordsService.updateMedicalRecords(1L,personRequest);
-        assertEquals(entity.getBirthDate(),"2");
+        assertEquals(entity.getBirthDate(),sdf.parse("11/11/1999"));
     }
 
     @Test
@@ -103,7 +115,7 @@ public class MedicalRecordsServiceTest {
         when(medicalRecordsRepository.save(entity)).thenReturn(entity);
         when(medicalRecordsConverter.mapperMedicalRecords(any(MedicalRecordsEntity.class))).thenReturn(null);
         medicalRecordsService.updateMedicalRecords(1L,personRequest);
-        assertEquals(entity.getBirthDate(),"1");
+        assertEquals(entity.getBirthDate(),sdf.parse("11/11/1998"));
     }
 
 
