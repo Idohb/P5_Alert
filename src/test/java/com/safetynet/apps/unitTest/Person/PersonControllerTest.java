@@ -109,8 +109,7 @@ class PersonControllerTest {
     @Test
     public void getListPersonFromListOfStations_shouldReturnOk() throws Exception {
         Map<String, Object> map = new HashMap<>();
-        List<Person> person = new ArrayList<>();
-        when(personService.getListPersonFromListOfStation(any())).thenReturn(person);
+        when(personService.getListPersonFromListOfStation(any())).thenReturn(map);
         mockMvc.perform(get("/flood/stations?stations=1,2")).andExpect(status().isOk());
     }
 
@@ -144,7 +143,7 @@ class PersonControllerTest {
 
     @Test
     public void getListPersonInfoFromName_shouldReturnOk() throws Exception {
-        List<Person> pl = new ArrayList<>();
+        Map<String, Object> pl = new HashMap<>();
         when(personService.getListPersonInfoFromName(any(),any())).thenReturn(pl);
         mockMvc.perform(get("/personInfo?firstName=3&lastName=4")).andExpect(status().isOk());
     }
@@ -157,9 +156,6 @@ class PersonControllerTest {
     }
 
 
-    //////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////
     @Test
     public void deletePerson_shouldReturnOk() throws Exception {
         Person person = new Person();

@@ -98,26 +98,24 @@ public class FireStationServiceTest {
         Assertions.assertEquals(entity.getAddress(),"1");
     }
 
+    @Test
+    void matchAddressPersonFireStation_shouldReturnListPersonEntity() throws ParseException {
+        // Set up PersonEntity
+        List<PersonEntity> pel = new ArrayList<>();
+        PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",null,null);
 
-//    @Test
-//    void matchAddressPersonFireStation_shouldReturnListPersonEntity() throws ParseException {
-//        // Set up PersonEntity
-//        List<PersonEntity> pel = new ArrayList<>();
-//        PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",null,null);
-//
-//        // Set up FireStationEntity
-//        List<FireStationEntity> fireStationEntityList = new ArrayList<>();
-//        FireStationEntity fe = new FireStationEntity(1L,"3","9",pel);
-//
-//        pe.setFireStationEntity(fireStationEntityList);
-//        pel.add(pe);
-//        fireStationEntityList.add(fe);
-//
-//
-//        when(fireStationRepository.findAll()).thenReturn(fireStationEntityList);
-//        List<PersonEntity> personEntityList = fireStationService.matchAddressPersonFireStation(pe);
-//        System.out.println(personEntityList.get(0));
-////        assertThat(personEntityList.get(0).getAddress()).isEqualTo("3");
-//    }
+        // Set up FireStationEntity
+        List<FireStationEntity> fireStationEntityList = new ArrayList<>();
+        FireStationEntity fe = new FireStationEntity(1L,"3","9",pel);
+
+        pe.setFireStationEntity(fireStationEntityList);
+        pel.add(pe);
+        fireStationEntityList.add(fe);
+
+
+        when(fireStationRepository.findAll()).thenReturn(fireStationEntityList);
+        List<PersonEntity> personEntityList = fireStationService.matchAddressPersonFireStation(pe);
+        assertThat(personEntityList.get(0).getAddress()).isEqualTo("3");
+    }
 
 }

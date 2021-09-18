@@ -1,6 +1,9 @@
 package com.safetynet.apps.service;
 
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.jsoniter.annotation.JsonObject;
 import com.safetynet.apps.controller.dto.FireStation.FireStationRequest;
 import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.mapper.PersonConverter;
@@ -14,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.io.StringWriter;
 import java.time.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -193,13 +198,13 @@ public class PersonService {
 //        System.out.println(birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 //        System.out.println(currentTime);
 
-        int age = Period.between(
+        return Period.between(
                 birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
                 currentTime
         ).getYears();
 //        System.out.println("age : " + age);
 
-        return age;
+        //return age;
 
     }
 
@@ -276,35 +281,95 @@ public class PersonService {
     }
 
 
-    private List<PersonEntity> listPersonFromListOfStation(String stations) {
-        Map<String, Object> map = new HashMap<>();
+//    private List<PersonEntity> listPersonFromListOfStation(String stations) {
+//        Map<String, Object> map = new HashMap<>();
+//
+//
+//        List<PersonEntity> personEntityList = new ArrayList<>();
+//
+//        String[] listStations = stations.split(",");
+//
+//        for (String station : listStations) {
+//
+//            List<FireStationEntity> fireStationEntityList = fireStationRepository.findByStation(station);
+//            for (FireStationEntity fe : fireStationEntityList) {
+//                for (PersonEntity pe : fe.getPersonFireStation()) {
+//                    personEntityList.add(pe);
+//                }
+//            }
+////            map.put("station",personEntityList);
+//
+//        }
+//        return personEntityList;
+//    }
+//
+//    public List<Person> getListPersonFromListOfStation(String stations) {
+//        return personConverter.mapperPerson(listPersonFromListOfStation(stations));
+//    }
 
-
-        List<PersonEntity> personEntityList = new ArrayList<>();
+    private Map<String, Object> listPersonFromListOfStation(String stations) {
+        Map<String, Object>map = new HashMap<>();
 
         String[] listStations = stations.split(",");
 
-        for (String station : listStations) {
-
+        for(String station : listStations) {
             List<FireStationEntity> fireStationEntityList = fireStationRepository.findByStation(station);
-            for (FireStationEntity fe : fireStationEntityList) {
-                for (PersonEntity pe : fe.getPersonFireStation()) {
-                    personEntityList.add(pe);
-                }
+            Map<String, Object> mapAddress = new HashMap<>();
+
+            for(FireStationEntity fe : fireStationEntityList) {
+                List<PersonEntity> personList = fe.getPersonFireStation();
+                Map<String, Object> mapName = new HashMap<>();
+                for(PersonEntity pe : personList) {
+                    Map<String, Object> mapInfo = new HashMap<>();
+                    mapInfo.put("phone", pe.getPhone());
+                    mapInfo.put("age", evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate()).toString());
+                    mapInfo.put("medication", pe.getMedicalRecord().getMedications());
+                    mapInfo.put("allergies", pe.getMedicalRecord().getAllergies());
+                    mapName.put(pe.getFirstName() + " " + pe.getLastName(), mapInfo);
+                 }
+
+                mapAddress.put(fe.getAddress(), mapName);
+
             }
-//            map.put("station",personEntityList);
+
+            map.put("station " + station, mapAddress);
+        }
+        return map;
+    }
+    public Map<String, Object> getListPersonFromListOfStation(String stations) {
+        return listPersonFromListOfStation(stations);
+    }
+
+    private Map<String, Object> matchPersonInfoByFirstnameAndLastname(List<PersonEntity> personEntityList) {
+        Map<String, Object> map = new HashMap<>();
+
+        for (PersonEntity pe : personEntityList) {
+            int age = evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate());
+            Map<String, Object> information = new HashMap<>();
+            List <String> family = new ArrayList<>();
+
+            information.put( "Age", age
+            );
+            List<PersonEntity> personEntities = personRepository.findAll();
+            for (PersonEntity searchFamily : personEntities) {
+                if (searchFamily.getLastName().equals(pe.getLastName()) && !searchFamily.getFirstName().equals(pe.getFirstName()))
+                    family.add( searchFamily.getFirstName() + " " + searchFamily.getLastName());
+            }
+            information.put("family", family);
+            information.put("mail",pe.getEmail());
+            information.put("medications",pe.getMedicalRecord().getMedications());
+            information.put("allergies",pe.getMedicalRecord().getAllergies());
+            information.put("address",pe.getAddress());
+            map.put(pe.getFirstName() + " " + pe.getLastName(), information);
 
         }
-        return personEntityList;
-    }
 
-    public List<Person> getListPersonFromListOfStation(String stations) {
-        return personConverter.mapperPerson(listPersonFromListOfStation(stations));
+        return  map;
     }
 
 
-    public List<Person> getListPersonInfoFromName(String firstName, String lastName) {
-        return personConverter.mapperPerson(personRepository.findByFirstNameAndLastName(firstName, lastName));
+    public Map<String, Object> getListPersonInfoFromName(String firstName, String lastName) {
+        return matchPersonInfoByFirstnameAndLastname(personRepository.findByFirstNameAndLastName(firstName, lastName));
     }
 
 

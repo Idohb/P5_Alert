@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.apps.controller.MedicalRecordsController;
 import com.safetynet.apps.controller.dto.MedicalRecords.MedicalRecordsRequest;
 import com.safetynet.apps.model.entity.PersonEntity;
+import com.safetynet.apps.model.repository.MedicalRecordsRepository;
 import com.safetynet.apps.service.MedicalRecordsService;
 import com.safetynet.apps.service.data.MedicalRecords;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,10 @@ public class MedicalRecordsControllerTest {
 
     @MockBean
     private MedicalRecordsService medicalRecordService;
+
+    @MockBean
+    private MedicalRecordsRepository medicalRecordRepository;
+
     @MockBean
     private PersonEntity personEntity;
 
@@ -51,13 +56,21 @@ public class MedicalRecordsControllerTest {
     @Test
     void getMedicalRecords_ShouldReturnOK() throws Exception {
         //GIVEN
+        List<MedicalRecords> medicalRecords = new ArrayList<>();
+        when(medicalRecordService.getMedicalRecords()).thenReturn(medicalRecords);
+        mockMvc.perform(get("/medicalRecords")).andExpect(status().isOk());
+    }
+
+    @Test
+    void getMedicalRecord_ShouldReturnOK() throws Exception {
+        //GIVEN
         MedicalRecords medicalRecords = new MedicalRecords();
         when(medicalRecordService.getMedicalRecord(any())).thenReturn(medicalRecords);
         mockMvc.perform(get("/medicalRecord/1")).andExpect(status().isOk());
     }
 
     @Test
-    void getMedicalRecords_ShouldReturnNotFound() throws Exception {
+    void getMedicalRecord_ShouldReturnNotFound() throws Exception {
         //GIVEN
         when(medicalRecordService.getMedicalRecord(any())).thenThrow(NoSuchElementException.class);
         mockMvc.perform(get("/medicalRecord/1")).andExpect(status().isNotFound());
@@ -87,6 +100,13 @@ public class MedicalRecordsControllerTest {
     @Test
     void createMedicalRecords_ShouldReturnBadRequest() throws Exception {
         when(medicalRecordService.addMedicalRecords(any())).thenThrow(IllegalArgumentException.class);
+        when(medicalRecordRepository.save(any())).thenThrow(IllegalArgumentException.class);
+        mockMvc.perform(post("/medicalRecord")).andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createMedicalRecord_ShouldReturnBadRequest() throws Exception {
+        when(medicalRecordService.addMedicalRecord(any(),any())).thenThrow(IllegalArgumentException.class);
         mockMvc.perform(post("/medicalRecord")).andExpect(status().isBadRequest());
     }
 

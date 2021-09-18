@@ -113,12 +113,16 @@ class PersonServiceTest {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         List<String> medications = new ArrayList<>();
         List<String> allergies = new ArrayList<>();
-        MedicalRecordsEntity entity = new MedicalRecordsEntity(0L,null,sdf.parse("11/11/1998"),medications,allergies);
+        MedicalRecordsEntity me1 = new MedicalRecordsEntity(0L,null,sdf.parse("11/11/1998"),medications,allergies);
+        MedicalRecordsEntity me2 = new MedicalRecordsEntity(0L,null,sdf.parse("11/11/2015"),medications,allergies);
 
         // Set up PersonEntity
         List<PersonEntity> pel = new ArrayList<>();
-        PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",entity,null);
+        PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",me1,null);
+        PersonEntity pe2 = new PersonEntity(1L,"1","2","3","4","5","6","7",me2,null);
+
         pel.add(pe);
+        pel.add(pe2);
 
         // Set up FireStationEntity
         List<FireStationEntity> fireStationEntityList = new ArrayList<>();
@@ -130,6 +134,7 @@ class PersonServiceTest {
         Map<String, Object> map = personService.getStation("9");
 
         assertThat(map.get("adult")).isEqualTo(1);
+        assertThat(map.get("child")).isEqualTo(1);
 
 
 
@@ -146,13 +151,15 @@ class PersonServiceTest {
         // Set up PersonEntity
         List<PersonEntity> pel = new ArrayList<>();
         PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",entity,null);
+        PersonEntity pe2 = new PersonEntity(1L,"10","2","3","4","5","6","7",entity,null);
         pel.add(pe);
+        pel.add(pe2);
 
         when(personRepository.findByAddress(any())).thenReturn(pel);
         Map<String, Object> map = personService.getChildAlert("3");
         Map<String, Object> mapExpecting = new HashMap<>();
         List <String> family = new ArrayList<>();
-
+        family.add(pe2.getFirstName() + " " + pe2.getLastName());
         mapExpecting.put("family",family);
         mapExpecting.put("Age",5);
         assertThat(map.get("1 2")).isEqualTo(mapExpecting);
@@ -217,46 +224,10 @@ class PersonServiceTest {
         mapExpecting.put("station",station);
 
         assertThat(map.get("1 2")).isEqualTo(mapExpecting);
-
-
-
     }
 
-
-//    @Test
-//    void listPersonFromListOfStation_shouldReturnPerson() throws ParseException {
-//        // Set up MedicalRecordsEntity
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-//        List<String> medications = new ArrayList<>();
-//        List<String> allergies = new ArrayList<>();
-//        MedicalRecordsEntity me = new MedicalRecordsEntity(0L,null,sdf.parse("11/11/2015"),medications,allergies);
-//
-//        // Set up PersonEntity
-//        List<PersonEntity> pel = new ArrayList<>();
-//        PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",me,null);
-//
-//        // Set up FireStationEntity
-//        List<FireStationEntity> fireStationEntityList = new ArrayList<>();
-//        FireStationEntity fe = new FireStationEntity(1L,"8","9",pel);
-//        fireStationEntityList.add(fe);
-//
-//        pe.setFireStationEntity(fireStationEntityList);
-//        pel.add(pe);
-//
-////        Map<String, Object> map = personService.getListPersonFromListOfStation("9");
-//
-//        Map<String, Object> mapExpecting = new HashMap<>();
-//        List<PersonEntity> personEntityList = new ArrayList<>();
-//        personEntityList.add(pe);
-//        System.out.println(mapExpecting);
-////        assertThat(map.get("station 9")).isEqualTo(mapExpecting);
-//
-//
-//
-//    }
-
     @Test
-    void getListPersonInfoFromName_ShouldReturnListPerson() throws ParseException {
+    void listPersonFromListOfStation_shouldReturnPerson() throws ParseException {
         // Set up MedicalRecordsEntity
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         List<String> medications = new ArrayList<>();
@@ -270,8 +241,56 @@ class PersonServiceTest {
         // Set up FireStationEntity
         List<FireStationEntity> fireStationEntityList = new ArrayList<>();
         FireStationEntity fe = new FireStationEntity(1L,"8","9",pel);
+        fireStationEntityList.add(fe);
+
         pe.setFireStationEntity(fireStationEntityList);
         pel.add(pe);
+
+        when(fireStationRepository.findByStation(any())).thenReturn(fireStationEntityList);
+        Map<String, Object> map = personService.getListPersonFromListOfStation("9");
+        System.out.println(map);
+
+        Map<String, Object> mapExpecting = new HashMap<>();
+        List<PersonEntity> personEntityList = new ArrayList<>();
+
+        Map<String, Object> mapAddress = new HashMap<>();
+        Map<String, Object> mapName = new HashMap<>();
+        Map<String, Object> mapInfo = new HashMap<>();
+
+//        mapInfo.put("phone", pe.getPhone());
+//        mapInfo.put("age", "5");
+//        mapInfo.put("medication", pe.getMedicalRecord().getMedications());
+//        mapInfo.put("allergies", pe.getMedicalRecord().getAllergies());
+//        mapName.put("1 2",mapInfo);
+//        mapAddress.put("8",mapName);
+//        mapExpecting.put("station 9", mapAddress);
+////        personEntityList.add(pe);
+////        System.out.println(mapExpecting);
+//        assertThat(map.get("station 9")).isEqualTo(mapExpecting);
+
+
+
+    }
+
+    @Test
+    void getListPersonInfoFromName_ShouldReturnListPerson() throws ParseException {
+        // Set up MedicalRecordsEntity
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        List<String> medications = new ArrayList<>();
+        List<String> allergies = new ArrayList<>();
+        MedicalRecordsEntity me = new MedicalRecordsEntity(0L,null,sdf.parse("11/11/2015"),medications,allergies);
+
+        // Set up PersonEntity
+        List<PersonEntity> pel = new ArrayList<>();
+        PersonEntity pe = new PersonEntity(1L,"1","2","3","4","5","6","7",me,null);
+        PersonEntity pe2 = new PersonEntity(1L,"10","2","3","4","5","6","7",me,null);
+
+        // Set up FireStationEntity
+        List<FireStationEntity> fireStationEntityList = new ArrayList<>();
+        FireStationEntity fe = new FireStationEntity(1L,"8","9",pel);
+        pe.setFireStationEntity(fireStationEntityList);
+        pel.add(pe);
+        pel.add(pe2);
         fireStationEntityList.add(fe);
 
         List<Person> personListExpected = new ArrayList<>();
@@ -279,10 +298,25 @@ class PersonServiceTest {
         personListExpected.add(person);
 
         when(personRepository.findByFirstNameAndLastName(any(),any())).thenReturn(pel);
-        when(personConverter.mapperPerson((List<PersonEntity>) any())).thenReturn(personListExpected);
-        List<Person> personList = personService.getListPersonInfoFromName("1","2");
-        System.out.println(personList);
-        assertThat(personList.get(0).getAddress()).isEqualTo("3");
+        when(personRepository.findAll()).thenReturn(pel);
+        Map<String, Object> personList = personService.getListPersonInfoFromName("1","2");
+
+        Map<String, Object> mapExpected = new HashMap<>();
+        Map<String, Object> mapInfo = new HashMap<>();
+        mapInfo.put("allergies", pe.getMedicalRecord().getAllergies());
+        mapInfo.put("mail", pe.getEmail());
+        mapInfo.put("medications", pe.getMedicalRecord().getMedications());
+        mapInfo.put("address",pe.getAddress());
+        mapInfo.put("Age", 5);
+
+        List<String> family = new ArrayList<>();
+        for (PersonEntity searchFamily : pel) {
+            if (searchFamily.getLastName().equals(pe.getLastName()) && !searchFamily.getFirstName().equals(pe.getFirstName()))
+                family.add( searchFamily.getFirstName() + " " + searchFamily.getLastName());
+        }
+        mapInfo.put("family", family);
+        mapExpected.put("1 2", mapInfo);
+        assertThat(personList.get("1 2")).isEqualTo(mapExpected.get("1 2"));
     }
 
 

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -33,7 +34,7 @@ public class PersonController {
 
     @GetMapping("persons")
     public ResponseEntity<List<Person>> getPersons() {
-        log.info("GET persons");
+        log.info("GET persons succeed");
         return ResponseEntity.ok(personService.getPersons());
     }
 
@@ -41,9 +42,10 @@ public class PersonController {
     @GetMapping("person/{id}")
     public ResponseEntity<Person> getPerson(@PathVariable("id") final Long id) {
         try {
+            log.info("GET person " + id + " succeed");
             return ResponseEntity.ok(personService.getPerson(id));
         } catch (NoSuchElementException e) {
-            log.error("GET person id error not found");
+            log.error("GET person " + id + ": error not found");
             return ResponseEntity.notFound().build();
         }
     }
@@ -55,17 +57,21 @@ public class PersonController {
     @PostMapping("/person")
     public ResponseEntity<Person> createPerson(@RequestBody PersonRequest person) {
         try {
+            log.info("POST add person succeed");
             return ResponseEntity.ok(personService.addPerson(person));
         } catch (IllegalArgumentException exception) {
+            log.error("Post add person error : illegal argument");
             return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("fireStation")
-    public ResponseEntity<Object> getPersonWithStation(@RequestParam("station") final String id) {
+    public ResponseEntity<Object> getPersonWithStation(@RequestParam("station") final String station) {
         try {
-            return ResponseEntity.ok(personService.getStation(id));
+            log.info("GET person with station " + station + " succeed");
+            return ResponseEntity.ok(personService.getStation(station));
         } catch (NoSuchElementException e) {
+            log.error("GET person with station " + station + "error : not found");
             return ResponseEntity.notFound().build();
         }
     }
@@ -73,8 +79,10 @@ public class PersonController {
     @GetMapping("childAlert")
     public ResponseEntity<Object> getChildAlert(@RequestParam("address") final String address) {
         try {
+            log.info("GET childAlert succeed");
             return ResponseEntity.ok(personService.getChildAlert(address));
         } catch (NoSuchElementException e) {
+            log.error("GET childAlert error : not found");
             return ResponseEntity.notFound().build();
         }
     }
@@ -82,8 +90,10 @@ public class PersonController {
     @GetMapping("phoneAlert")
     public ResponseEntity<Object> getPhoneNumberOfFireStation(@RequestParam("station") final String station) {
         try {
+            log.info("GET phoneAlert succeed");
             return ResponseEntity.ok(personService.getPhoneNumberOfFireStation(station));
         } catch (NoSuchElementException e) {
+            log.error("GET phoneAlert error : not found");
             return ResponseEntity.notFound().build();
         }
     }
@@ -92,26 +102,32 @@ public class PersonController {
     @GetMapping("fire")
     public ResponseEntity<Object> getFire(@RequestParam("address") final String address) {
         try {
+            log.info("GET /fire?address succeed");
             return ResponseEntity.ok(personService.getFire(address));
         } catch (NoSuchElementException e) {
+            log.error("GET /fire?address error : not found");
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("flood/stations")
-    public ResponseEntity<List<Person>> getListPersonFromListOfStations(@RequestParam("stations") final String stations) {
+    public ResponseEntity<Object> getListPersonFromListOfStations(@RequestParam("stations") final String stations) {
         try {
+            log.info("GET flood/stations?stations succeed");
             return ResponseEntity.ok(personService.getListPersonFromListOfStation(stations));
         } catch (NoSuchElementException e) {
+            log.error("GET flood/stations?stations error : not found");
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("personInfo")
-    public ResponseEntity<List<Person>> getListPersonInfoFromName(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
+    public ResponseEntity<Map<String, Object>> getListPersonInfoFromName(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
         try {
+            log.info("GET personInfo succeed");
             return ResponseEntity.ok(personService.getListPersonInfoFromName(firstName,lastName));
         } catch (NoSuchElementException e) {
+            log.error("GET personInfo error : not found");
             return ResponseEntity.notFound().build();
         }
     }
@@ -119,8 +135,10 @@ public class PersonController {
     @GetMapping("communityEmail")
     public ResponseEntity<Object> getEmailFromCity(@RequestParam("city") final String city) {
         try {
+            log.info("GET communityEmail succeed");
             return ResponseEntity.ok(personService.getEmailFromCity(city));
         } catch (NoSuchElementException e) {
+            log.error("GET communityEmail error : not found");
             return ResponseEntity.notFound().build();
         }
     }
@@ -134,8 +152,10 @@ public class PersonController {
     @PutMapping("/person/{id}")
     public ResponseEntity<Person> updatePerson(@PathVariable("id") final Long id, @RequestBody PersonRequest person) {
         try {
+            log.info("PUT person updated");
             return ResponseEntity.ok(personService.updatePerson(id, person));
         } catch (NoSuchElementException exception) {
+            log.error("PUT person update error : not found");
             return ResponseEntity.notFound().build();
         }
     }
@@ -151,11 +171,13 @@ public class PersonController {
         try {
             personService.getPerson(id);
             personService.deletePerson(id);
-
+            log.info("DELETE person succeed");
             return ResponseEntity.ok().build();
         } catch (NoSuchElementException exception) {
+            log.error("DELETE person error : not found");
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException exception) {
+            log.error("DELETE person error : illegal argument");
             return ResponseEntity.badRequest().build();
         }
     }
@@ -166,6 +188,7 @@ public class PersonController {
     @DeleteMapping("/persons")
     public ResponseEntity<?> deletePersons() {
         personService.deletePersons();
+        log.info("DELETE all persons succeed");
         return ResponseEntity.noContent().build();
     }
 
