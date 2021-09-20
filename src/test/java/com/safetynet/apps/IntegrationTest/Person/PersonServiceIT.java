@@ -4,6 +4,8 @@ import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.mapper.PersonConverter;
 import com.safetynet.apps.model.entity.PersonEntity;
 import com.safetynet.apps.model.repository.PersonRepository;
+import com.safetynet.apps.service.FireStationService;
+import com.safetynet.apps.service.MedicalRecordsService;
 import com.safetynet.apps.service.PersonService;
 import com.safetynet.apps.service.data.Person;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,12 @@ public class PersonServiceIT {
     private PersonRepository personRepository;
     @Mock
     private PersonConverter personConverter;
+    @Mock
+    private MedicalRecordsService medicalRecordsService;
+    @Mock
+    private FireStationService fireStationService;
+    @Mock
+    private PersonRequest personRequest;
 
     @InjectMocks
     private PersonService personService;
@@ -43,8 +51,7 @@ public class PersonServiceIT {
         PersonRequest personEntityRequested = new PersonRequest("1","2","3","4","5","6","7", null);
         when(personRepository.save(any(PersonEntity.class))).thenReturn(personEntity);
         when(personConverter.mapperPerson(any(PersonEntity.class))).thenReturn(person);
-        person = personService.addPerson(personEntityRequested);
-        System.out.println(person.getFirstName());
+            personService.addPerson(personEntityRequested);
         verify(personConverter,times(1)).mapperPerson(any(PersonEntity.class));
 
     }
