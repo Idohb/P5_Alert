@@ -136,7 +136,7 @@ public class PersonService {
 
         for (FireStationEntity fe : fireStationEntityList) {
             for (PersonEntity pe : fe.getPersonFireStation()) {
-                List information = new ArrayList<>();
+                List<String> information = new ArrayList<>();
                 information.add(pe.getAddress());
                 information.add(pe.getPhone());
                 map.put(pe.getFirstName() + " " + pe.getLastName(), information);
@@ -216,15 +216,15 @@ public class PersonService {
 
         for (PersonEntity pe : personEntityList) {
             int age = evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate());
-            if (age <= AGE_ENFANT ) {
+            if (age <= AGE_ENFANT) {
                 Map<String, Object> information = new HashMap<>();
-                List <String> family = new ArrayList<>();
+                List<String> family = new ArrayList<>();
 
-                information.put( "Age", age
+                information.put("Age", age
                 );
                 for (PersonEntity searchFamily : personEntityList) {
                     if (searchFamily.getLastName().equals(pe.getLastName()) && !searchFamily.getFirstName().equals(pe.getFirstName()))
-                        family.add( searchFamily.getFirstName() + " " + searchFamily.getLastName());
+                        family.add(searchFamily.getFirstName() + " " + searchFamily.getLastName());
                 }
                 information.put("family", family);
 
@@ -258,7 +258,7 @@ public class PersonService {
     private Map<String, Object> matchPersonByAddress(List<PersonEntity> personEntityList) {
         Map<String, Object> map = new HashMap<>();
 
-        for(PersonEntity pe : personEntityList) {
+        for (PersonEntity pe : personEntityList) {
             Map<String, Object> info = new HashMap<>();
             info.put("phone", pe.getPhone());
             info.put("age", evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate()));
@@ -270,10 +270,10 @@ public class PersonService {
                 station.add(fe.getStation());
 
             info.put("station", station);
-            map.put(pe.getFirstName() + " " + pe.getLastName() , info);
+            map.put(pe.getFirstName() + " " + pe.getLastName(), info);
         }
 
-        return  map;
+        return map;
     }
 
     public Map<String, Object> getFire(String address) {
@@ -308,25 +308,25 @@ public class PersonService {
 //    }
 
     private Map<String, Object> listPersonFromListOfStation(String stations) {
-        Map<String, Object>map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
         String[] listStations = stations.split(",");
 
-        for(String station : listStations) {
+        for (String station : listStations) {
             List<FireStationEntity> fireStationEntityList = fireStationRepository.findByStation(station);
             Map<String, Object> mapAddress = new HashMap<>();
 
-            for(FireStationEntity fe : fireStationEntityList) {
+            for (FireStationEntity fe : fireStationEntityList) {
                 List<PersonEntity> personList = fe.getPersonFireStation();
                 Map<String, Object> mapName = new HashMap<>();
-                for(PersonEntity pe : personList) {
+                for (PersonEntity pe : personList) {
                     Map<String, Object> mapInfo = new HashMap<>();
                     mapInfo.put("phone", pe.getPhone());
                     mapInfo.put("age", evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate()).toString());
                     mapInfo.put("medication", pe.getMedicalRecord().getMedications());
                     mapInfo.put("allergies", pe.getMedicalRecord().getAllergies());
                     mapName.put(pe.getFirstName() + " " + pe.getLastName(), mapInfo);
-                 }
+                }
 
                 mapAddress.put(fe.getAddress(), mapName);
 
@@ -336,6 +336,7 @@ public class PersonService {
         }
         return map;
     }
+
     public Map<String, Object> getListPersonFromListOfStation(String stations) {
         return listPersonFromListOfStation(stations);
     }
@@ -346,25 +347,25 @@ public class PersonService {
         for (PersonEntity pe : personEntityList) {
             int age = evaluateAgeOfPerson(pe.getMedicalRecord().getBirthDate());
             Map<String, Object> information = new HashMap<>();
-            List <String> family = new ArrayList<>();
+            List<String> family = new ArrayList<>();
 
-            information.put( "Age", age
+            information.put("Age", age
             );
             List<PersonEntity> personEntities = personRepository.findAll();
             for (PersonEntity searchFamily : personEntities) {
                 if (searchFamily.getLastName().equals(pe.getLastName()) && !searchFamily.getFirstName().equals(pe.getFirstName()))
-                    family.add( searchFamily.getFirstName() + " " + searchFamily.getLastName());
+                    family.add(searchFamily.getFirstName() + " " + searchFamily.getLastName());
             }
             information.put("family", family);
-            information.put("mail",pe.getEmail());
-            information.put("medications",pe.getMedicalRecord().getMedications());
-            information.put("allergies",pe.getMedicalRecord().getAllergies());
-            information.put("address",pe.getAddress());
+            information.put("mail", pe.getEmail());
+            information.put("medications", pe.getMedicalRecord().getMedications());
+            information.put("allergies", pe.getMedicalRecord().getAllergies());
+            information.put("address", pe.getAddress());
             map.put(pe.getFirstName() + " " + pe.getLastName(), information);
 
         }
 
-        return  map;
+        return map;
     }
 
 

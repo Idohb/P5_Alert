@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @Component
 public class MedicalRecordsConverter {
 
-    
+
     public MedicalRecords mapperMedicalRecords(MedicalRecordsEntity medicalRecordsEntity) {
         MedicalRecords medicalRecords = new MedicalRecords();
         medicalRecords.setIdMedicalRecords(medicalRecordsEntity.getIdMedicalRecords());

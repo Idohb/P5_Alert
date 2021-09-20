@@ -33,7 +33,7 @@ public class FireStationService {
     private PersonService personService;
 
     public List<FireStation> getFireStations() {
-        return fireStationConverter.mapperFireStation( fireStationRepository.findAll());
+        return fireStationConverter.mapperFireStation(fireStationRepository.findAll());
     }
 
     public FireStation getFireStation(final Long id) {
@@ -91,14 +91,14 @@ public class FireStationService {
         return fireStationRepository.saveAll(fireStations);
     }
 
-    public void attributePersonToFireStation (List<PersonEntity> globalPersonEntityList, List<FireStationEntity> globalFireStationEntityList) {
+    public void attributePersonToFireStation(List<PersonEntity> globalPersonEntityList, List<FireStationEntity> globalFireStationEntityList) {
 
-        for (FireStationEntity fireStationEntity: globalFireStationEntityList) {
+        for (FireStationEntity fireStationEntity : globalFireStationEntityList) {
 
             String addressFireStation = fireStationEntity.getAddress();
             List<PersonEntity> personEntityList = new ArrayList<>();
 
-            for(PersonEntity personEntity : globalPersonEntityList) {
+            for (PersonEntity personEntity : globalPersonEntityList) {
                 if (personEntity.getAddress().equals(addressFireStation)) {
                     personEntityList.add(personEntity);
                 }
@@ -122,10 +122,10 @@ public class FireStationService {
 
     public List<PersonEntity> matchAddressPersonFireStation(PersonEntity personEntity) {
         List<PersonEntity> personEntityList = new ArrayList<>();
-        if(personEntity != null) {
+        if (personEntity != null) {
 
             List<FireStationEntity> fireStationEntityList = fireStationRepository.findAll();
-            for (FireStationEntity fireStationEntity: fireStationEntityList) {
+            for (FireStationEntity fireStationEntity : fireStationEntityList) {
 
                 if (personEntity.getAddress().equals(fireStationEntity.getAddress())) {
                     personEntity.setFireStationEntity(fireStationEntityList);
@@ -137,8 +137,6 @@ public class FireStationService {
         return personEntityList;
 
     }
-
-
 
 
 }

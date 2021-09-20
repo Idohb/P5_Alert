@@ -48,12 +48,10 @@ public class FireStationController {
     }
 
 
-
-
     @PostMapping("/fireStation")
     public ResponseEntity<FireStation> createFireStation(@RequestBody FireStationRequest fireStation) {
-            log.info("POST add fireStation succeed");
-            return ResponseEntity.ok(fireStationService.addFireStation(fireStation));
+        log.info("POST add fireStation succeed");
+        return ResponseEntity.ok(fireStationService.addFireStation(fireStation));
     }
 
     @PutMapping("/fireStation/{id}")

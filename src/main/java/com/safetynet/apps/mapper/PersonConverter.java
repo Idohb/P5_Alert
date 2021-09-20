@@ -28,11 +28,11 @@ public class PersonConverter {
         person.setEmail(personEntity.getEmail());
         person.setPhone(personEntity.getPhone());
 
-        if(personEntity.getMedicalRecord() != null) {
+        if (personEntity.getMedicalRecord() != null) {
             person.setMedicalRecords(medicalRecordsConverter.mapperMedicalRecords(personEntity.getMedicalRecord()));
         }
 
-        if(personEntity.getFireStationEntity() != null) {
+        if (personEntity.getFireStationEntity() != null) {
             person.setFireStation(fireStationConverter.mapperFireStation(personEntity.getFireStationEntity()));
         }
 

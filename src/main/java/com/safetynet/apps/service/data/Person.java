@@ -21,9 +21,10 @@ public class Person {
     private MedicalRecords medicalRecords;
     private List<FireStation> fireStation;
 
-    public Person() {}
+    public Person() {
+    }
 
-    public Person(PersonEntity p)  {
+    public Person(PersonEntity p) {
         MedicalRecordsConverter medicalRecordsConverter = new MedicalRecordsConverter();
         FireStationConverter fireStationConverter = new FireStationConverter();
         setId(p.getId());

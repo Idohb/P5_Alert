@@ -51,8 +51,8 @@ public class MedicalRecordsController {
 
     @PostMapping("/medicalRecord")
     public ResponseEntity<MedicalRecords> createMedicalRecord(@RequestBody MedicalRecordsRequest medicalRecords) {
-            log.info("POST add medicalRecords succeed");
-            return ResponseEntity.ok(medicalRecordsService.addMedicalRecord(medicalRecords, null));
+        log.info("POST add medicalRecords succeed");
+        return ResponseEntity.ok(medicalRecordsService.addMedicalRecord(medicalRecords, null));
     }
 
     @PutMapping("/medicalRecord/{id}")

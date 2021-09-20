@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class FireStationRequest {
 
-  private String address;
+    private String address;
 
-  private String station;
+    private String station;
 
 
 }

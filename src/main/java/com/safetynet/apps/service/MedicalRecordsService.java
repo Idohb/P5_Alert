@@ -50,7 +50,7 @@ public class MedicalRecordsService {
         // so we need to create a Person as well
         if (medicalRecord != null && personEntity == null) {
             personEntity = personRepository.save(new PersonEntity(
-            0L, null, null, null, null, null, null, null, null, null)
+                    0L, null, null, null, null, null, null, null, null, null)
             );
         }
 

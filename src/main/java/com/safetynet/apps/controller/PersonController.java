@@ -61,8 +61,8 @@ public class PersonController {
      */
     @PostMapping("/person")
     public ResponseEntity<Person> createPerson(@RequestBody PersonRequest person) {
-            log.info("POST add person succeed");
-            return ResponseEntity.ok(personService.addPerson(person));
+        log.info("POST add person succeed");
+        return ResponseEntity.ok(personService.addPerson(person));
     }
 
     @GetMapping("fireStation")
@@ -125,7 +125,7 @@ public class PersonController {
     public ResponseEntity<Map<String, Object>> getListPersonInfoFromName(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
         try {
             log.info("GET personInfo succeed");
-            return ResponseEntity.ok(personService.getListPersonInfoFromName(firstName,lastName));
+            return ResponseEntity.ok(personService.getListPersonInfoFromName(firstName, lastName));
         } catch (NoSuchElementException e) {
             log.error("GET personInfo error : not found");
             return ResponseEntity.notFound().build();
