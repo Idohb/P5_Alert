@@ -38,7 +38,7 @@ public class FireStationControllerTest {
 
 
     @Test
-    void getPersons_ShouldReturnOK() throws Exception {
+    void getFireStations_ShouldReturnOK() throws Exception {
         List<FireStation> fireStation = new ArrayList<>();
         when(fireStationService.getFireStations()).thenReturn(fireStation);
         mockMvc.perform(get("/fireStations")).andExpect(status().isOk());
@@ -46,11 +46,25 @@ public class FireStationControllerTest {
 
 
     @Test
-    void getPerson_ShouldReturnOK() throws Exception {
+    void getFireStation_ShouldReturnOK() throws Exception {
         //GIVEN
         FireStation fireStation = new FireStation();
         when(fireStationService.getFireStation(any())).thenReturn(fireStation);
         mockMvc.perform(get("/fireStation/1")).andExpect(status().isOk());
+    }
+
+    @Test
+    void getFireStations_ShouldReturnNoContent() throws Exception {
+        //GIVEN
+        when(fireStationService.getFireStations()).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/fireStations")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getFireStation_ShouldReturnNoContent() throws Exception {
+        //GIVEN
+        when(fireStationService.getFireStation(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/fireStation/1")).andExpect(status().isNotFound());
     }
 
 

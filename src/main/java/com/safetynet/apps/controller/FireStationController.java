@@ -57,7 +57,7 @@ public class FireStationController {
             return ResponseEntity.ok(fireStationService.addFireStation(fireStation));
         } catch (IllegalArgumentException exception) {
             log.error("POST add fireStation error : illegal argument");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
     }
 

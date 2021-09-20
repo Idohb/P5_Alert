@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.apps.controller.PersonController;
 import com.safetynet.apps.controller.dto.Person.PersonRequest;
 import com.safetynet.apps.model.entity.PersonEntity;
+import com.safetynet.apps.model.repository.PersonRepository;
 import com.safetynet.apps.service.FireStationService;
 import com.safetynet.apps.service.PersonService;
 import com.safetynet.apps.service.data.FireStation;
@@ -37,9 +38,12 @@ class PersonControllerTest {
 
     @MockBean
     private PersonService personService;
+
     @MockBean
     private FireStationService fireStationService;
 
+    @MockBean
+    private PersonRepository personRepository;
 
     @Test
     void getPersons_ShouldReturnOK() throws Exception {
@@ -58,7 +62,14 @@ class PersonControllerTest {
     }
 
     @Test
-    void getPerson_ShouldReturnNoContent() throws Exception {
+    void getPersons_ShouldReturnNotFound() throws Exception {
+        //GIVEN
+        when(personService.getPersons()).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/persons")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getPerson_ShouldReturnNotFound() throws Exception {
         //GIVEN
         when(personService.getPerson(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(get("/person/1")).andExpect(status().isNotFound());
@@ -90,6 +101,7 @@ class PersonControllerTest {
     @Test
     void createPerson_ShouldReturnBadRequest() throws Exception {
         when(personService.addPerson(any())).thenThrow(IllegalArgumentException.class);
+        when(personRepository.save(any())).thenThrow(new NoSuchElementException());
         mockMvc.perform(post("/person")).andExpect(status().isBadRequest());
     }
 
@@ -190,6 +202,48 @@ class PersonControllerTest {
         PersonRequest personRequest = new PersonRequest();
         personService.addPerson(personRequest);
         mockMvc.perform(delete("/persons")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void getPersonWithStation_shouldReturnNoContent() throws Exception {
+        when(personService.getStation(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/fireStation?station=1")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getChildAlert_shouldReturnNoContent() throws Exception {
+        when(personService.getChildAlert(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/childAlert?address=1509 Culver St")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getPhoneNumberOfFireStation_shouldReturnNoContent() throws Exception {
+        when(personService.getPhoneNumberOfFireStation(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/phoneAlert?station=3")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getFire_shouldReturnNoContent() throws Exception {
+        when(personService.getFire(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/fire?address=1509 Culver St")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getListPersonFromListOfStations_shouldReturnNoContent() throws Exception {
+        when(personService.getListPersonFromListOfStation(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/flood/stations?stations=3,4")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getListPersonInfoFromName_shouldReturnNoContent() throws Exception {
+        when(personService.getListPersonInfoFromName(any(),any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/personInfo?firstName=John&lastName=Boyd")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void getEmailFromCity_shouldReturnNoContent() throws Exception {
+        when(personService.getEmailFromCity(any())).thenThrow(new NoSuchElementException());
+        mockMvc.perform(get("/communityEmail?city=Culver")).andExpect(status().isNotFound());
     }
 
 

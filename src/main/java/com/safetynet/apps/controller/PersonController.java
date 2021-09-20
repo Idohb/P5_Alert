@@ -34,8 +34,13 @@ public class PersonController {
 
     @GetMapping("persons")
     public ResponseEntity<List<Person>> getPersons() {
-        log.info("GET persons succeed");
-        return ResponseEntity.ok(personService.getPersons());
+        try {
+            log.info("GET persons succeed");
+            return ResponseEntity.ok(personService.getPersons());
+        } catch (NoSuchElementException e) {
+            log.error("GET fireStation error : not found");
+            return ResponseEntity.noContent().build();
+        }
     }
 
 

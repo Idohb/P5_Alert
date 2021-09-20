@@ -252,21 +252,20 @@ class PersonServiceTest {
 
         Map<String, Object> mapExpecting = new HashMap<>();
         List<PersonEntity> personEntityList = new ArrayList<>();
-
         Map<String, Object> mapAddress = new HashMap<>();
         Map<String, Object> mapName = new HashMap<>();
         Map<String, Object> mapInfo = new HashMap<>();
 
-//        mapInfo.put("phone", pe.getPhone());
-//        mapInfo.put("age", "5");
-//        mapInfo.put("medication", pe.getMedicalRecord().getMedications());
-//        mapInfo.put("allergies", pe.getMedicalRecord().getAllergies());
-//        mapName.put("1 2",mapInfo);
-//        mapAddress.put("8",mapName);
-//        mapExpecting.put("station 9", mapAddress);
-////        personEntityList.add(pe);
-////        System.out.println(mapExpecting);
-//        assertThat(map.get("station 9")).isEqualTo(mapExpecting);
+        mapInfo.put("phone", pe.getPhone());
+        mapInfo.put("age", "5");
+        mapInfo.put("medication", pe.getMedicalRecord().getMedications());
+        mapInfo.put("allergies", pe.getMedicalRecord().getAllergies());
+        mapName.put("1 2",mapInfo);
+        mapAddress.put("8",mapName);
+        mapExpecting.put("station 9", mapAddress);
+        personEntityList.add(pe);
+        System.out.println(mapExpecting);
+        assertThat(map.get("station 9")).isEqualTo(mapExpecting.get("station 9"));
 
 
 
