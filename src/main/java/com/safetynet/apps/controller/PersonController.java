@@ -61,13 +61,8 @@ public class PersonController {
      */
     @PostMapping("/person")
     public ResponseEntity<Person> createPerson(@RequestBody PersonRequest person) {
-        try {
             log.info("POST add person succeed");
             return ResponseEntity.ok(personService.addPerson(person));
-        } catch (IllegalArgumentException exception) {
-            log.error("Post add person error : illegal argument");
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @GetMapping("fireStation")

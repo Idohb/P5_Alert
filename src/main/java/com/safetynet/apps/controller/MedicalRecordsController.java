@@ -51,13 +51,8 @@ public class MedicalRecordsController {
 
     @PostMapping("/medicalRecord")
     public ResponseEntity<MedicalRecords> createMedicalRecord(@RequestBody MedicalRecordsRequest medicalRecords) {
-        try {
             log.info("POST add medicalRecords succeed");
             return ResponseEntity.ok(medicalRecordsService.addMedicalRecord(medicalRecords, null));
-        } catch (IllegalArgumentException exception) {
-            log.error("POST add medicalRecords error : illegal argument");
-            return ResponseEntity.badRequest().build();
-        }
     }
 
     @PutMapping("/medicalRecord/{id}")

@@ -99,13 +99,6 @@ class PersonControllerTest {
     }
 
     @Test
-    void createPerson_ShouldReturnBadRequest() throws Exception {
-        when(personService.addPerson(any())).thenThrow(IllegalArgumentException.class);
-        when(personRepository.save(any())).thenThrow(new NoSuchElementException());
-        mockMvc.perform(post("/person")).andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void updatePerson_shouldReturnNoSuchElement() throws Exception {
         when(personService.updatePerson(any(), any())).thenThrow(NoSuchElementException.class);
         mockMvc.perform(put("/person/1").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isNotFound());

@@ -85,12 +85,6 @@ public class FireStationControllerTest {
     }
 
     @Test
-    void createPerson_ShouldReturnBadRequest() throws Exception {
-        when(fireStationService.addFireStation(any())).thenThrow(IllegalArgumentException.class);
-        mockMvc.perform(post("/fireStation")).andExpect(status().isBadRequest());
-    }
-
-    @Test
     public void updatePerson_shouldReturnNoSuchElement() throws Exception {
         when(fireStationService.updateFireStation(any(), any())).thenThrow(NoSuchElementException.class);
         mockMvc.perform(put("/fireStation/1").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isNotFound());

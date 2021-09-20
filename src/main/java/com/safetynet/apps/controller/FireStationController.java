@@ -52,13 +52,8 @@ public class FireStationController {
 
     @PostMapping("/fireStation")
     public ResponseEntity<FireStation> createFireStation(@RequestBody FireStationRequest fireStation) {
-        try {
             log.info("POST add fireStation succeed");
             return ResponseEntity.ok(fireStationService.addFireStation(fireStation));
-        } catch (IllegalArgumentException exception) {
-            log.error("POST add fireStation error : illegal argument");
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @PutMapping("/fireStation/{id}")

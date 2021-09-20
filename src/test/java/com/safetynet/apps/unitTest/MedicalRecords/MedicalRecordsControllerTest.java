@@ -98,13 +98,6 @@ public class MedicalRecordsControllerTest {
     }
 
     @Test
-    void createMedicalRecords_ShouldReturnBadRequest() throws Exception {
-        when(medicalRecordService.addMedicalRecords(any())).thenThrow(IllegalArgumentException.class);
-        when(medicalRecordRepository.save(any())).thenThrow(IllegalArgumentException.class);
-        mockMvc.perform(post("/medicalRecord")).andExpect(status().isBadRequest());
-    }
-
-    @Test
     void createMedicalRecord_ShouldReturnBadRequest() throws Exception {
         when(medicalRecordService.addMedicalRecord(any(),any())).thenThrow(IllegalArgumentException.class);
         mockMvc.perform(post("/medicalRecord")).andExpect(status().isBadRequest());
