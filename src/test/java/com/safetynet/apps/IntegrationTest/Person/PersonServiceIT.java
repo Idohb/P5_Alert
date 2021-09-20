@@ -37,25 +37,24 @@ public class PersonServiceIT {
     @Test
     void addPerson_ShouldChangeEntityFromPersonrequest() {
         Person person = new Person();
-            person.setId(1L);
-            person.setFirstName("8");
-            person.setLastName("2");
-            person.setAddress("3");
-            person.setCity("4");
-            person.setZip("5");
-            person.setPhone("6");
-            person.setEmail("7");
-            person.setMedicalRecords(null);
-            person.setFireStation(null);
-        PersonEntity personEntity = new PersonEntity(0L,"1","2","3","4","5","6","7",null,null);
-        PersonRequest personEntityRequested = new PersonRequest("1","2","3","4","5","6","7", null);
+        person.setId(1L);
+        person.setFirstName("8");
+        person.setLastName("2");
+        person.setAddress("3");
+        person.setCity("4");
+        person.setZip("5");
+        person.setPhone("6");
+        person.setEmail("7");
+        person.setMedicalRecords(null);
+        person.setFireStation(null);
+        PersonEntity personEntity = new PersonEntity(0L, "1", "2", "3", "4", "5", "6", "7", null, null);
+        PersonRequest personEntityRequested = new PersonRequest("1", "2", "3", "4", "5", "6", "7", null);
         when(personRepository.save(any(PersonEntity.class))).thenReturn(personEntity);
         when(personConverter.mapperPerson(any(PersonEntity.class))).thenReturn(person);
-            personService.addPerson(personEntityRequested);
-        verify(personConverter,times(1)).mapperPerson(any(PersonEntity.class));
+        personService.addPerson(personEntityRequested);
+        verify(personConverter, times(1)).mapperPerson(any(PersonEntity.class));
 
     }
-
 
 
 }
