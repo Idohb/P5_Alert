@@ -47,7 +47,7 @@ public class MedicalRecordsService {
     public MedicalRecords addMedicalRecord(MedicalRecordsRequest medicalRecord, PersonEntity personEntity) {
 
         // Because we have the possibility to create a medicalRecords
-        // so we need to create a Person as well
+        // in that case, we need to create a Person as well
         if (medicalRecord != null && personEntity == null) {
             personEntity = personRepository.save(new PersonEntity(
                     0L, null, null, null, null, null, null, null, null, null)

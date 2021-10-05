@@ -9,12 +9,10 @@ import java.util.List;
 
 @Repository
 public interface PersonRepository extends JpaRepository<PersonEntity, Long> {
-//    List<PersonEntity> findAllByFireStationEntityIsContaining(FireStationEntity fireStationEntity);
 
     List<PersonEntity> findByAddress(String address);
 
     List<PersonEntity> findByFirstNameAndLastName(String firstName, String lastName);
 
     List<PersonEntity> findByCity(String city);
-//    List<PersonEntity> findBy
 }

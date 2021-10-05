@@ -63,9 +63,6 @@ public class FireStationService {
 
         attributePersonToFireStation(personEntityList, fireStationEntityList);
 
-//        for(FireStationEntity fireStationEntity : fireStationEntityList) {
-//            listAllPersonFromFireStation(fireStationEntity);
-//        }
         return fireStationConverter.mapperFireStation(entity);
     }
 
@@ -109,16 +106,6 @@ public class FireStationService {
         }
 
     }
-
-//    public void listAllPersonFromFireStation(FireStationEntity fireStationEntity) {
-//        List<PersonEntity> personEntityList = fireStationEntity.getPersonFireStation();
-//        System.out.println("FireStation number : " + fireStationEntity.getStation() + " address : " + fireStationEntity.getAddress());
-//        for (PersonEntity personEntity : personEntityList) {
-//            System.out.println("Person : " + personEntity.getFirstName() + "/" + personEntity.getLastName());
-//
-//        }
-//    }
-
 
     public List<PersonEntity> matchAddressPersonFireStation(PersonEntity personEntity) {
         List<PersonEntity> personEntityList = new ArrayList<>();

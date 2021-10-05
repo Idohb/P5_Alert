@@ -80,12 +80,6 @@ public class DataInitialisationMapper implements ApplicationRunner {
         fireStationService.addFireStations(fireStations);
         personService.addPersons(persons);
 
-        //fireStations.forEach(p -> System.out.println(p.getAddress().concat(p.getStation())));
-//        for(FireStationEntity fireStationEntity : fireStations) {
-//            fireStationService.listAllPersonFromFireStation(fireStationEntity);
-//        }
-
-
         return fireStations;
     }
 

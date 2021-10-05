@@ -71,9 +71,7 @@ public class PersonService {
         entity = personRepository.save(entity);
 
 
-        // tentative de création de MedicalRecords dans la condition ci dessous
-        // Les données de MedicalRecords sont récupérées par personRequest
-        // qui possède MedicalRecordsRequest
+        // Create MedicalRecords when MedicalRecords' datas exist in personRequest
         medicalRecordsService.addMedicalRecord(personRequest.getMedicalRecords(), entity);
 
         attributePersonToFireStation(entity);
@@ -158,53 +156,13 @@ public class PersonService {
         return matchPersonWithStation(fireStationRepository.findByStation(id));
     }
 
-//    private List<Person> matchChildrenWithAddress(List<PersonEntity> personEntityList) {
-//
-//        List<PersonEntity> personList = new ArrayList<>();
-//
-//        LocalDateTime localCurrentDateTime = LocalDateTime.now().minus(Period.ofYears(18));
-//        Date date18YearsBefore = Date.from(localCurrentDateTime.toInstant(ZoneOffset.UTC));
-//
-//        for (PersonEntity pe : personEntityList) {
-//            if (pe.getMedicalRecord()
-//                    .getBirthDate()
-//                    .after(date18YearsBefore)) {
-//                personList.add(pe);
-//            }
-//        }
-//
-//        return personConverter.mapperPerson(personList);
-//    }
-
-//    private Map<String, Object> matchPersonWithStation(List<FireStationEntity> fireStationEntityList) {
-//        Map<String, Object> map = new HashMap<>();
-//
-//        for (FireStationEntity fe : fireStationEntityList) {
-//            for (PersonEntity pe : fe.getPersonFireStation()) {
-//                List information = new ArrayList<>();
-//                information.add(pe.getAddress());
-//                information.add(pe.getPhone());
-//                map.put(pe.getFirstName() + " " + pe.getLastName(), information);
-//            }
-//        }
-//
-//        return map;
-//    }
-
-
     private Integer evaluateAgeOfPerson(Date birthdate) {
         LocalDate currentTime = LocalDate.now();
-//        System.out.println("----");
-//        System.out.println(birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-//        System.out.println(currentTime);
 
         return Period.between(
                 birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
                 currentTime
         ).getYears();
-//        System.out.println("age : " + age);
-
-        //return age;
 
     }
 
@@ -279,33 +237,6 @@ public class PersonService {
     public Map<String, Object> getFire(String address) {
         return matchPersonByAddress(personRepository.findByAddress(address));
     }
-
-
-//    private List<PersonEntity> listPersonFromListOfStation(String stations) {
-//        Map<String, Object> map = new HashMap<>();
-//
-//
-//        List<PersonEntity> personEntityList = new ArrayList<>();
-//
-//        String[] listStations = stations.split(",");
-//
-//        for (String station : listStations) {
-//
-//            List<FireStationEntity> fireStationEntityList = fireStationRepository.findByStation(station);
-//            for (FireStationEntity fe : fireStationEntityList) {
-//                for (PersonEntity pe : fe.getPersonFireStation()) {
-//                    personEntityList.add(pe);
-//                }
-//            }
-////            map.put("station",personEntityList);
-//
-//        }
-//        return personEntityList;
-//    }
-//
-//    public List<Person> getListPersonFromListOfStation(String stations) {
-//        return personConverter.mapperPerson(listPersonFromListOfStation(stations));
-//    }
 
     private Map<String, Object> listPersonFromListOfStation(String stations) {
         Map<String, Object> map = new HashMap<>();

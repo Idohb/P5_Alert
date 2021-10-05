@@ -15,7 +15,5 @@ public class MedicalRecordsRequest {
     private Date birthdate;
     private List<String> medications;
     private List<String> allergies;
-
-    // mettre le nom de la Person
 }
 
